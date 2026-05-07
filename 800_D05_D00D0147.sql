@@ -1,4 +1,76 @@
-﻿USE LEMONSYS
+<variables>
+    <variable name="vDivisionID" control="tdbcDivisionID" dataType="text" binding="DivisionID"/>
+    <variable name="vchkPeriod" control="chkPeriod" dataType="number" binding="" />
+    <variable name="vPeriodFr" control="tdbcPeriodIDFr" dataType="text" binding="Period"/>
+    <variable name="vPeriodTo" control="tdbcPeriodIDTo" dataType="text" binding="Period"/>    
+
+    <variable name="vchkRDVoucherDate" control="chkRDVoucherDate" dataType="number" binding="" />
+    <variable name="vRDVoucherDateFrom" control="txbRDVoucherDateFrom" dataType="date" binding="" />
+    <variable name="vRDVoucherDateTo" control="txbRDVoucherDateTo" dataType="date" binding="" />
+
+    <variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
+    
+    <!-- Thêm các filter mới cho ngày giao hàng và trạng thái đơn hàng -->
+    <variable name="vchkDeliveryDate" control="chkDeliveryDate" dataType="number" binding="" />
+    <variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
+    <variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
+    
+    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="StatusSO"/>
+</variables>
+
+<datasets>
+    <dataset name="Divisions" queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder 
+                                       FROM D90T9999 T99 INNER JOIN D91T0016 T16 ON T99.DivisionID = T16.DivisionID 
+                                       WHERE T16.Disabled = 0 AND T99.UserID = value[''pUserID''] 
+                                       UNION ALL SELECT N''%'' as DivisionID, N''[Tất cả]'' as DivisionName, 0 AS DisplayOrder 
+                                       ORDER BY DisplayOrder"/>
+    
+    <dataset name="Periods" queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear 
+                                      FROM D90T9999 ORDER BY TranYear DESC, TranMonth DESC"/>
+
+    <dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D05P0707 value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vchkDeliveryDate''], value[''vDeliveryDateFrom''], value[''vDeliveryDateTo''], value[''vStatusSO'']"/>
+    
+    <dataset name="dsGridData" queryText="EXEC Z_Q00713_D05P0707 value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vchkDeliveryDate''], value[''vDeliveryDateFrom''], value[''vDeliveryDateTo''], value[''vStatusSO'']"/>
+</datasets>
+
+<commands>
+    <command name="cmdFilter">
+        <add type="required" control="tdbcDivisionID"/>
+        <add type="addCol" control="tdbgGrid" dataset="dsCreateCol"/>
+        <add type="load" control="tdbgGrid" dataset="dsGridData"/>
+    </command>
+    <command name="cmdPrint">
+        <add type="print" reportTypeID="Z_B00107_D07F3021" moduleID="49" sqlMain="EXEC Z_B00107_D07P3021 value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], value[''vWarehouseID''], value[''vInventoryID''], value[''vTypeCodeID''], value[''vICodeID''], value[''vLocationNo''], value[''vTimelineEXPCode''], value[''vAsOfRDVoucherDate''], value[''pUserID''], value[''pHostName''], value[''pCodeTable''], value[''pLanguage''], 1, ''PrintExcel''"/>
+    </command>
+</commands>
+
+<form-items>
+    <control name="tdbcDivisionID" type="combo" dataset="Divisions" event="SelectedIndexChanged" required="true"/>
+    <control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+    <control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+    
+    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
+    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
+
+    <control name="txbVoucherNo" type="text"/>
+    
+    <!-- Lọc theo ngày giao hàng -->
+    <control name="chkDeliveryDate" type="checkbox"/>
+    <control name="txbDeliveryDateFrom" type="DateEdit"/>
+    <control name="txbDeliveryDateTo" type="DateEdit"/>
+
+    <!-- Lọc theo trạng thái -->
+    <control name="tdbcStatusSO" type="combo" dataset="StatusSOs"/>
+    
+    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5" isAutoClick="true"/>
+    <control name="mnuPrint" event="Click" command="cmdPrint"/>
+    <control name="tdbgGrid" type="grid"/>
+</form-items>
+
+
+
+--------------------------
+USE LEMONSYS
 
 
 Declare @XmlContent xml,@XAMLContent xml, @XmlContent01 xml,@XAMLContent01 xml
