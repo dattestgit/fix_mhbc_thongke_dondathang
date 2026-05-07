@@ -1,4 +1,4 @@
-﻿--IF EXISTS (SELECT TOP 1 1 FROM DBO.SYSOBJECTS WITH(NOLOCK) WHERE ID = OBJECT_ID(N'[DBO].[Z_Q00713_D30P0707]') AND OBJECTPROPERTY(ID, N'IsProcedure') = 1)
+--IF EXISTS (SELECT TOP 1 1 FROM DBO.SYSOBJECTS WITH(NOLOCK) WHERE ID = OBJECT_ID(N'[DBO].[Z_Q00713_D30P0707]') AND OBJECTPROPERTY(ID, N'IsProcedure') = 1)
 --DROP PROCEDURE [DBO].[Z_Q00713_D30P0707]
 --GO
 --SET QUOTED_IDENTIFIER ON
@@ -29,7 +29,7 @@
 ----
 
 
-CREATE PROCEDURE Z_Q00713_D30P0707
+ALTER PROCEDURE Z_Q00713_D30P0707
 ( 
 	@DivisionID				VARCHAR(50) = '',
 	@IsPeriod				TINYINT = 0,
@@ -142,35 +142,35 @@ BEGIN
 		SET @SQLGenCol01 = N'
 		INSERT INTO #StructTable (Level, ParentNodeID, CaptionID, CaptionName, FieldName, ColMergeNum, RowMergeNum, ColID, DataType, Length, IsLocked, SumFooter, DatatypeServer, DataFormat, IsHide, Fix)	
 		VALUES 
+		(0, '''', ''OrderNo'', N''STT'', ''OrderNo'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
 		(0, '''', ''VoucherNo'', N''Đơn hàng'', ''VoucherNo'', 1, 2 , NULL, ''S'', 110, NULL, '''', ''NVARCHAR(250)'', NULL, 0,''''),
 		(0, '''', ''VoucherDate'', N''Ngày nhận'', ''VoucherDate'', 1, 2 , NULL, ''S'', 90, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
 		(0, '''', ''Deliverydate'', N''Ngày giao'', ''Deliverydate'', 1, 2 , NULL, ''S'', 90, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
 		(0, '''', ''ObjectID'', N''Mã khách hàng'', ''ObjectID'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''ObjectName'', N''khách hàng'', ''ObjectName'', 1, 2 , NULL, ''S'', 250, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''specifications1'', N''Dài'', ''specifications1'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''specifications2'', N''Rộng'', ''specifications2'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''specifications3'', N''Cao'', ''specifications3'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''QuantityTT'', N''SLTT'', ''QuantityTT'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''QuantityKH'', N''SLKH'', ''QuantityKH'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''OrderNo'', N''STT'', ''OrderNo'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String01'', N''Sóng'', ''String01'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String02'', N''Khổ'', ''String02'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String03'', N''Kết cấu'', ''String03'', 1, 2 , NULL, ''S'',250, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String04'', N''Quy cách'', ''String04'', 1, 2 , NULL, ''S'', 110, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String05'', N''Quy cách bổ sung'', ''String05'', 1, 2 , NULL, ''S'', 110, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''ObjectName'', N''Khách hàng'', ''ObjectName'', 1, 2 , NULL, ''S'', 250, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''LengthValue'', N''Dài'', ''LengthValue'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''WidthValue'', N''Rộng'', ''WidthValue'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''HeightValue'', N''Cao'', ''HeightValue'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
 		(0, '''', ''Quantity'', N''Số lượng'', ''Quantity'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String06'', N''Mặt C'', ''String06'', 1, 2 , NULL, ''S'', 130, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String07'', N''Sóng C'', ''String07'', 1, 2 , NULL, ''S'', 130, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String08'', N''Mặt B'', ''String08'', 1, 2 , NULL, ''S'', 130, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String09'', N''Sóng B'', ''String09'', 1, 2 , NULL, ''S'', 130, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String10'', N''Mặt E'', ''String10'', 1, 2 , NULL, ''S'', 130, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String11'', N''Sóng E'', ''String11'', 1, 2 , NULL, ''S'', 130, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''KhoK'', N''Khổ K'', ''KhoK'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''KhoD'', N''Khổ D'', ''KhoD'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''StructureID'', N''Kết cấu'', ''StructureID'', 1, 2 , NULL, ''S'',250, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		(0, '''', ''WaveID'', N''Sóng'', ''WaveID'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,'''')
 
-		(0, '''', ''StringD'', N''Đáy In'', ''StringD'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''specifications1'', N''Dài'', ''specifications1'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''specifications2'', N''Rộng'', ''specifications2'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''specifications3'', N''Cao'', ''specifications3'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
 
-		(0, '''', ''String12'', N''S'', ''String12'', 1, 2 , NULL, ''S'', 60, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''String13'', N''L'', ''String13'', 1, 2 , NULL, ''S'', 60, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		(0, '''', ''LocationNo'', N''Mã lô'', ''LocationNo'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,'''')
+
+		--(0, '''', ''String01'', N''Sóng'', ''String01'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''String02'', N''Khổ'', ''String02'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''String03'', N''Kết cấu'', ''String03'', 1, 2 , NULL, ''S'',250, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''String04'', N''Quy cách'', ''String04'', 1, 2 , NULL, ''S'', 110, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		--(0, '''', ''String05'', N''Quy cách bổ sung'', ''String05'', 1, 2 , NULL, ''S'', 110, NULL, '''', ''NVARCHAR(500)'', NULL, 0,'''')
+
+
+
+
 
 		SELECT		*
 		FROM		#StructTable
@@ -198,7 +198,7 @@ END
 IF @Mode = 1 
 BEGIN
 SET @SQL00 = N'
---Cột 0: Đơn hàng → Lấy Số đơn hàng bán
+--Cột 0: Đơn hàdng → Lấy Số đơn hàng bán
 --Cột 1: Ngày nhận → Ngày phiếu của đơn hàng
 --Cột 2: Ngày giao → Ngày Giao hàng trên lướt chi tiết
 --Cột 3: Mã khách hàng -> Mã KH đơn hàng
