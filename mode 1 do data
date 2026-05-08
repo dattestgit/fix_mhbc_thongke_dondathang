@@ -1,0 +1,154 @@
+IF @Mode = 1 
+BEGIN
+	SET @SQL00 = N'
+	;WITH BaseData AS
+	(
+		SELECT
+			T1.DivisionID,
+			T1.TranMonth,
+			T1.TranYear,
+			T1.QuotationID,
+			T2.QuotationItemID,
+			ISNULL(T2.OrderNum, 0) AS OrderNum,
+
+			T1.VoucherNum AS VoucherNo,
+			T1.VoucherDate,
+			T2.DeliveryDate AS Deliverydate,
+
+			T1.ObjectTypeID,
+			T1.CustomerID AS ObjectID,
+			ISNULL(NULLIF(T1.CustomerNameU, N''''), O.ObjectNameU) AS ObjectName,
+
+			T2.InventoryID,
+			ISNULL(NULLIF(T2.ItemNameU, N''''), I.InventoryNameU) AS InventoryName,
+
+			ISNULL(T2.Spec01ID, '''') AS Spec01ID,
+			ISNULL(T2.DRef4U, '''') AS StructureID,
+			ISNULL(T2.DRef5U, '''') AS WaveID,
+
+			CONVERT(DECIMAL(28, 8), ISNULL(NULLIF(T2.CQuantity, 0), T2.Quantity)) AS Quantity,
+
+			T1.StatusVoucher AS StatusSO
+		FROM D05T0016 T1 WITH(NOLOCK)
+		INNER JOIN D05T0017 T2 WITH(NOLOCK)
+			ON T1.QuotationID = T2.QuotationID
+		LEFT JOIN Object O WITH(NOLOCK)
+			ON O.ObjectTypeID = T1.ObjectTypeID
+			AND O.ObjectID = T1.CustomerID
+		LEFT JOIN D07T0002 I WITH(NOLOCK)
+			ON I.InventoryID = T2.InventoryID
+		WHERE 1 = 1
+			AND T1.ProfessionKind IN (''O'', ''RO'')
+	'
+
+	SET @SQL01 = N'
+	' + CASE 
+			WHEN ISNULL(@DivisionID, '') IN ('', '%') THEN '' 
+			ELSE ' AND T1.DivisionID = ''' + REPLACE(@DivisionID, '''', '''''') + ''' '
+		END + '
+
+	' + CASE 
+			WHEN @IsPeriod = 1 THEN 
+				' AND (T1.TranMonth + T1.TranYear * 100) BETWEEN ' + @FromPeriod + ' AND ' + @ToPeriod + ' '
+			ELSE ''
+		END + '
+
+	' + CASE 
+			WHEN @IsRDVoucherDate = 1 THEN 
+				' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' 
+				+ CONVERT(VARCHAR(10), @DateRDVoucherDateFrom, 112) 
+				+ ''' AND ''' 
+				+ CONVERT(VARCHAR(10), @DateRDVoucherDateTo, 112) 
+				+ ''' '
+			ELSE ''
+		END + '
+
+	' + CASE 
+			WHEN ISNULL(@VoucherNo, '') = '' THEN ''
+			ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' '
+		END + '
+
+	' + CASE 
+			WHEN ISNULL(@DeliveryDateFrom, '') = '' THEN ''
+			ELSE ' AND CONVERT(DATE, T2.DeliveryDate) >= ''' + CONVERT(VARCHAR(10), @DeliveryDateFrom, 112) + ''' '
+		END + '
+
+	' + CASE 
+			WHEN ISNULL(@DeliveryDateTo, '') = '' THEN ''
+			ELSE ' AND CONVERT(DATE, T2.DeliveryDate) <= ''' + CONVERT(VARCHAR(10), @DeliveryDateTo, 112) + ''' '
+		END + '
+
+	' + CASE 
+			WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN ''
+			ELSE ' AND T1.StatusVoucher = ''' + REPLACE(@StatusSO, '''', '''''') + ''' '
+		END + '
+	),
+	SpecPos AS
+	(
+		SELECT
+			B.*,
+			CHARINDEX(''X'', UPPER(B.Spec01ID)) AS PosX1,
+			CASE 
+				WHEN CHARINDEX(''X'', UPPER(B.Spec01ID)) > 0 
+					THEN CHARINDEX(''X'', UPPER(B.Spec01ID), CHARINDEX(''X'', UPPER(B.Spec01ID)) + 1)
+				ELSE 0
+			END AS PosX2
+		FROM BaseData B
+	)
+	'
+
+	SET @SQL02 = N'
+	SELECT
+		ROW_NUMBER() OVER
+		(
+			ORDER BY VoucherDate DESC, VoucherNo, OrderNum, QuotationItemID
+		) AS OrderNo,
+
+		VoucherNo,
+		CONVERT(VARCHAR(10), VoucherDate, 103) AS VoucherDate,
+		CONVERT(VARCHAR(10), Deliverydate, 103) AS Deliverydate,
+
+		ObjectID,
+		ObjectName,
+		InventoryName,
+
+		CASE 
+			WHEN PosX1 > 1 
+				THEN LEFT(Spec01ID, PosX1 - 1)
+			ELSE ''''
+		END AS LengthValue,
+
+		CASE 
+			WHEN PosX1 > 0 AND PosX2 > PosX1
+				THEN SUBSTRING(Spec01ID, PosX1 + 1, PosX2 - PosX1 - 1)
+			ELSE ''''
+		END AS WidthValue,
+
+		CASE 
+			WHEN PosX2 > 0
+				THEN SUBSTRING(Spec01ID, PosX2 + 1, LEN(Spec01ID) - PosX2)
+			ELSE ''''
+		END AS HeightValue,
+
+		Quantity,
+
+		CONVERT(NVARCHAR(50), '''') AS KhoK,
+		CONVERT(NVARCHAR(50), '''') AS KhoD,
+
+		StructureID,
+		WaveID
+	FROM SpecPos
+	ORDER BY VoucherDate DESC, VoucherNo, OrderNum, QuotationItemID
+	'
+
+	SET @SQL03 = N''
+	SET @SQL04 = N''
+	SET @SQL05 = N''
+	SET @SQL06 = N''
+	SET @SQL07 = N''
+	SET @SQL08 = N''
+	SET @SQL09 = N''
+	SET @SQL10 = N''
+
+	EXEC (@SQL00 + @SQL01 + @SQL02 + @SQL03 + @SQL04 + @SQL05 + @SQL06 + @SQL07 + @SQL08 + @SQL09 + @SQL10)
+END
