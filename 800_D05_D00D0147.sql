@@ -32,8 +32,8 @@ Set @XmlContent=N'
 		<dataset name="Divisions"	 queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder From D90T9999 T99 WITH(NOLOCK) INNER JOIN D91T0016 T16 WITH(NOLOCK) ON T99.DivisionID = T16.DivisionID INNER JOIN D91T0060 T60 WITH(NOLOCK) ON T99.DivisionID = T60.DivisionID  WHERE T16.Disabled = 0 AND T60.UserID = value[''pUserID''] UNION ALL Select N''%'' as DivisionID, N''[Tất cả]'' as DivisionName, 0 AS DisplayOrder ORDER BY DisplayOrder, T99.DivisionID"/>
 		<dataset name="Periods"		 queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear From D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC"/>
 
-		<dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D05P0706  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],0,value[''vVoucherNo''] "  />
-		<dataset name="dsGridData"  queryText="EXEC Z_Q00713_D05P0706  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],1,value[''vVoucherNo''] " />
+		<dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D05P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],0,value[''vVoucherNo''] "  />
+		<dataset name="dsGridData"  queryText="EXEC Z_Q00713_D05P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],1,value[''vVoucherNo''] " />
 	
 	</datasets>
 
