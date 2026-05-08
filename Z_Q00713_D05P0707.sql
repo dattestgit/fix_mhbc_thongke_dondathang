@@ -40,6 +40,10 @@ ALTER PROCEDURE Z_Q00713_D05P0707
 	@DateRDVoucherDateTo	DATETIME = '',	---- Ngay hop dong Den
 	@Mode					TINYINT = 0 ,
 	@VoucherNo				VARCHAR(Max) = ''
+
+	--@DeliveryDateTo DATETIME = '',
+	--@DeliveryDateFrom DATETIME= '',
+	--@StatusSO VARCHAR(50) = '%' 
 ) 
 AS 
 SET NOCOUNT ON
@@ -198,33 +202,24 @@ END
 IF @Mode = 1 
 BEGIN
 SET @SQL00 = N'
---Cột 0: Đơn hàdng → Lấy Số đơn hàng bán
---Cột 1: Ngày nhận → Ngày phiếu của đơn hàng
---Cột 2: Ngày giao → Ngày Giao hàng trên lướt chi tiết
---Cột 3: Mã khách hàng -> Mã KH đơn hàng
---Cột 4: Quy cách mặt hàng Dài → Cắt chuỗi từ quy cách
---Cột 5: Quy cách mặt hàng Rộng → Cắt chuỗi từ quy cách
---Cột 6: Quy cách mặt hàng Cao → Cắt chuỗi từ quy cách
+Cột 1:[STT] Số thứ tự
+Cột 2:[Số phiếu] Số phiếu đơn hàng
+Cột 3:[Ngày nhận] Ngày nhận hàng
+Cột 4:[Ngày giao] Ngày giao hàng
+Cột 5:[Mã khách hàng] Mã Khách hàng
+Cột 6:[Tên Khách hàng] Tên Khách hàng
+Cột 7:[Tên hàng] Tên hàng hóa
+Cột 8:[Dài] Chỉ số Dài của Quy cách 01
+Cột 9:[Rộng] Chỉ số Rộng của Quy cách 01
+Cột 10:[Cao] Chỉ số Cao của Quy cách 01
 --VD: 35.5X60X15 Dài: 35.5 Rộng: 60 Cao: 15 ( Cách nhau bởi ký tự X)
---Cột 7: SLTT → Để trống
---Cột 8: SLKH → Số lượng của đơn hàng
---Cột 9: STT → Để trống
---Cột 10: Sóng → Thông tin phụ số 5 Đơn hàng
---Cột 11: Khổ → Để trống
---Cột 12: Kết cấu → Thông tin phụ số 4 Đơn hàng
---Cột 13: Quy cách → Để trống
---Cột 14: Quy cách bổ sung → Để trống
---Cột 15: Số lượng → Để trống
---Cột 16: Mặt C → Để trống
---Cột 17: Sóng C → Để trống
---Cột 18: Mặt B → Để trống
---Cột 19: Sóng B → Để trống
---Cột 20: Mặt E → Để trống
---Cột 21: Sóng E → Để trống
---Cột 22: Đáy in → Để trống
---Cột 23: S -> Để trống
---Cột 24: L → Để trống
---Cột 25: Mã lô → Để trống
+Cột 11:[Số lượng] Số lượng đơn hàng
+Cột 12:[Khổ K] Theo công thức Rộng+Cao
+Cột 13:[Khổ D] Theo công thức ((Dài+ Rộng)*2)+4
+Cột 14:[Kết cấu] Thông tin phụ đơn hàng
+Cột 15:[Sóng] Thông tin phụ đơn hàng
+
+	
 --PaperSize
 --135.00000000
 --SpecGT01
