@@ -1,0 +1,165 @@
+ALTER PROCEDURE Z_Q00713_D05P0707
+(
+    @DivisionID             VARCHAR(50),
+    @IsPeriod               TINYINT = 0,
+    @PeriodFrom             VARCHAR(50) = '',
+    @PeriodTo               VARCHAR(50) = '',
+    @IsRDVoucherDate        TINYINT = 0,            -- Cho phép lọc theo ngày phiếu
+    @DateRDVoucherDateFrom  DATETIME = NULL,         -- Ngày hợp đồng từ
+    @DateRDVoucherDateTo    DATETIME = NULL,         -- Ngày hợp đồng đến
+    @Mode                   TINYINT = 0,            -- Chế độ lấy cột (0: lấy cấu trúc cột, 1: lấy dữ liệu)
+    @VoucherNo              VARCHAR(MAX) = '',
+    
+    -- Các điều kiện lọc mới
+    @DeliveryDateFrom       DATETIME = NULL,         -- Ngày giao hàng từ
+    @DeliveryDateTo         DATETIME = NULL,         -- Ngày giao hàng đến
+    @StatusSO               VARCHAR(50) = '%'       -- Trạng thái đơn hàng
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @FromMonth TINYINT, @FromYear INT, @ToMonth TINYINT, @ToYear INT;
+    
+    -- Chuyển đổi PeriodFrom và PeriodTo thành tháng/năm
+    SET @FromMonth = LEFT(@PeriodFrom, 2);
+    SET @FromYear  = RIGHT(@PeriodFrom, 4);
+    SET @ToMonth   = LEFT(@PeriodTo, 2);
+    SET @ToYear    = RIGHT(@PeriodTo, 4);
+    
+    DECLARE @FromPeriod VARCHAR(2000), @ToPeriod VARCHAR(2000);
+    SET @FromPeriod = LTRIM(RTRIM(STR(@FromMonth + @FromYear * 100)));
+    SET @ToPeriod   = LTRIM(RTRIM(STR(@ToMonth + @ToYear * 100)));
+
+    -- Tạo bảng tạm #StructTable để sinh các cột cần thiết
+    CREATE TABLE #StructTable
+    (
+        Level           TINYINT,
+        ParentNodeID    VARCHAR(50),
+        CaptionID       VARCHAR(50),
+        CaptionName     NVARCHAR(500),
+        FieldName       VARCHAR(50),
+        ColMergeNum     TINYINT,
+        RowMergeNum     TINYINT,
+        ColID           TINYINT,
+        IsLocked        TINYINT,
+        DataFormat      VARCHAR(50),
+        Length          INT,
+        DataType        VARCHAR(50),
+        ControlType     VARCHAR(50),
+        DisplayOrder    INT IDENTITY(1, 1),
+        Expression      VARCHAR(1000),
+        DefaultValues   VARCHAR(1000),
+        SumFooter       VARCHAR(50),
+        IsHide          TINYINT DEFAULT(0),
+        DatatypeServer  VARCHAR(50),
+        Fix             NVARCHAR(50)
+    );
+
+    -- Đưa cấu trúc cột vào bảng tạm
+    INSERT INTO #StructTable
+    (Level, ParentNodeID, CaptionID, CaptionName, FieldName, ColMergeNum, RowMergeNum, ColID, DataType, Length, IsLocked, SumFooter, DatatypeServer, DataFormat, IsHide, Fix)
+    VALUES
+    (0, '', 'STT', 'Số thứ tự', 'STT', 1, 2, NULL, 'S', 100, NULL, '', 'NVARCHAR(50)', NULL, 0, ''),
+    (0, '', 'VoucherNo', 'Số phiếu', 'VoucherNo', 1, 2, NULL, 'S', 150, NULL, '', 'NVARCHAR(50)', NULL, 0, ''),
+    (0, '', 'VoucherDate', 'Ngày nhận', 'VoucherDate', 1, 2, NULL, 'S', 100, NULL, '', 'NVARCHAR(50)', NULL, 0, ''),
+    (0, '', 'DeliveryDate', 'Ngày giao', 'DeliveryDate', 1, 2, NULL, 'S', 100, NULL, '', 'NVARCHAR(50)', NULL, 0, ''),
+    (0, '', 'ObjectID', 'Mã khách hàng', 'ObjectID', 1, 2, NULL, 'S', 150, NULL, '', 'NVARCHAR(50)', NULL, 0, ''),
+    (0, '', 'ObjectName', 'Tên khách hàng', 'ObjectName', 1, 2, NULL, 'S', 250, NULL, '', 'NVARCHAR(500)', NULL, 0, ''),
+    (0, '', 'InventoryName', 'Tên hàng hóa', 'InventoryName', 1, 2, NULL, 'S', 250, NULL, '', 'NVARCHAR(500)', NULL, 0, ''),
+    (0, '', 'Quantity', 'Số lượng', 'Quantity', 1, 2, NULL, 'S', 100, NULL, '', 'DECIMAL(28,8)', NULL, 0, '')
+
+    -- Truy vấn dữ liệu theo tiêu chí lọc
+    SELECT 
+        ROW_NUMBER() OVER (ORDER BY T1.VoucherDate DESC, T1.VoucherNum) AS STT,
+        T1.VoucherNum,
+        CONVERT(VARCHAR(10), T1.VoucherDate, 103) AS VoucherDate,
+        CONVERT(VARCHAR(10), T2.DeliveryDate, 103) AS DeliveryDate,
+        T1.CustomerID AS ObjectID,
+        T1.CustomerName AS ObjectName,
+        T2.InventoryName,
+        T2.Quantity
+    FROM D05T0016 T1
+    INNER JOIN D05T0017 T2 ON T1.QuotationID = T2.QuotationID
+    WHERE 1 = 1
+        AND (T1.TranMonth + T1.TranYear * 100) BETWEEN @FromPeriod AND @ToPeriod
+        AND CONVERT(NVARCHAR(500), T1.VoucherDate, 111) BETWEEN CONVERT(NVARCHAR(500), @DateRDVoucherDateFrom, 103)
+                                                          AND CONVERT(NVARCHAR(500), @DateRDVoucherDateTo, 103)
+        AND (ISNULL(@VoucherNo, '') = '' OR T1.VoucherNum LIKE '%' + REPLACE(@VoucherNo, '''', '''''') + '%')
+        AND (ISNULL(@DeliveryDateFrom, '') = '' OR T2.DeliveryDate >= @DeliveryDateFrom)
+        AND (ISNULL(@DeliveryDateTo, '') = '' OR T2.DeliveryDate <= @DeliveryDateTo)
+        AND (ISNULL(@StatusSO, '') = '' OR T1.StatusVoucher = @StatusSO)
+
+    -- Xóa bảng tạm sau khi sử dụng
+    DROP TABLE #StructTable;
+
+END
+------------------------------------
+<variables>
+    <variable name="vDivisionID" control="tdbcDivisionID" dataType="text" binding="DivisionID"/>
+    <variable name="vchkPeriod" control="chkPeriod" dataType="number" binding="" />
+    <variable name="vPeriodFr" control="tdbcPeriodIDFr" dataType="text" binding="Period"/>
+    <variable name="vPeriodTo" control="tdbcPeriodIDTo" dataType="text" binding="Period"/>    
+
+    <variable name="vchkRDVoucherDate" control="chkRDVoucherDate" dataType="number" binding="" />
+    <variable name="vRDVoucherDateFrom" control="txbRDVoucherDateFrom" dataType="date" binding="" />
+    <variable name="vRDVoucherDateTo" control="txbRDVoucherDateTo" dataType="date" binding="" />
+
+    <variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
+    
+    <!-- Thêm các filter mới cho ngày giao hàng và trạng thái đơn hàng -->
+    <variable name="vchkDeliveryDate" control="chkDeliveryDate" dataType="number" binding="" />
+    <variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
+    <variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
+    
+    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="StatusSO"/>
+</variables>
+
+<datasets>
+    <dataset name="Divisions" queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder 
+                                       FROM D90T9999 T99 INNER JOIN D91T0016 T16 ON T99.DivisionID = T16.DivisionID 
+                                       WHERE T16.Disabled = 0 AND T99.UserID = value[''pUserID''] 
+                                       UNION ALL SELECT N''%'' as DivisionID, N''[Tất cả]'' as DivisionName, 0 AS DisplayOrder 
+                                       ORDER BY DisplayOrder"/>
+    
+    <dataset name="Periods" queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear 
+                                      FROM D90T9999 ORDER BY TranYear DESC, TranMonth DESC"/>
+
+    <dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D05P0707 value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vchkDeliveryDate''], value[''vDeliveryDateFrom''], value[''vDeliveryDateTo''], value[''vStatusSO'']"/>
+    
+    <dataset name="dsGridData" queryText="EXEC Z_Q00713_D05P0707 value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vchkDeliveryDate''], value[''vDeliveryDateFrom''], value[''vDeliveryDateTo''], value[''vStatusSO'']"/>
+</datasets>
+
+<commands>
+    <command name="cmdFilter">
+        <add type="required" control="tdbcDivisionID"/>
+        <add type="addCol" control="tdbgGrid" dataset="dsCreateCol"/>
+        <add type="load" control="tdbgGrid" dataset="dsGridData"/>
+    </command>
+    <command name="cmdPrint">
+        <add type="print" reportTypeID="Z_B00107_D07F3021" moduleID="49" sqlMain="EXEC Z_B00107_D07P3021 value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], value[''vWarehouseID''], value[''vInventoryID''], value[''vTypeCodeID''], value[''vICodeID''], value[''vLocationNo''], value[''vTimelineEXPCode''], value[''vAsOfRDVoucherDate''], value[''pUserID''], value[''pHostName''], value[''pCodeTable''], value[''pLanguage''], 1, ''PrintExcel''"/>
+    </command>
+</commands>
+
+<form-items>
+    <control name="tdbcDivisionID" type="combo" dataset="Divisions" event="SelectedIndexChanged" required="true"/>
+    <control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+    <control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+    
+    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
+    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
+
+    <control name="txbVoucherNo" type="text"/>
+    
+    <!-- Lọc theo ngày giao hàng -->
+    <control name="chkDeliveryDate" type="checkbox"/>
+    <control name="txbDeliveryDateFrom" type="DateEdit"/>
+    <control name="txbDeliveryDateTo" type="DateEdit"/>
+
+    <!-- Lọc theo trạng thái -->
+    <control name="tdbcStatusSO" type="combo" dataset="StatusSOs"/>
+    
+    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5" isAutoClick="true"/>
+    <control name="mnuPrint" event="Click" command="cmdPrint"/>
+    <control name="tdbgGrid" type="grid"/>
+</form-items>
