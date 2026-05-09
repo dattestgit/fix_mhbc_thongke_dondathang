@@ -101,7 +101,7 @@
       <dxe:DateEdit x:Name="txbRDVoucherDateTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
       <!--Begin don han-->
       <Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
-      <dxg:PrintTextEdit x:Name="txbVoucherNo" EditValue="VoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="6" Grid.Row="1" />
+      <dxe:TextEdit x:Name="txbVoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="6" Grid.Row="1" />
       <!--Begin Button Loc-->
       <Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" Height="22" RenderTransformOrigin="1.25,0.5" />
       <!--Begin Button Loc-->
@@ -116,13 +116,7 @@
         </dxg:GridControl.ContextMenu>
         <!--Grid view-->
         <dxg:GridControl.View>
-          <dxg:TableView x:Name="gridview1" AutoWidth="False" ShowGroupPanel="True" ShowAutoFilterRow="True" AllowEditing="False" AllowPerPixelScrolling="True">
-            <dxg:TableView.FormatConditions>
-              <dxg:FormatCondition Expression="[StyleExcel] = '(B)'">
-                <dxc:Format FontWeight="Bold" />
-              </dxg:FormatCondition>
-            </dxg:TableView.FormatConditions>
-          </dxg:TableView>
+          <dxg:TableView x:Name="gridview1" AutoWidth="False" ShowGroupPanel="True" ShowAutoFilterRow="True" AllowEditing="False" AllowPerPixelScrolling="True" />
         </dxg:GridControl.View>
       </L3:L3GridControl>
       <!--End Grid-->
