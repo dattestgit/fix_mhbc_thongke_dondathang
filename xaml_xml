@@ -1,4 +1,4 @@
-﻿USE LEMONSYS
+USE LEMONSYS
 
 
 Declare @XmlContent xml,@XAMLContent xml, @XmlContent01 xml,@XAMLContent01 xml
@@ -24,7 +24,8 @@ Set @XmlContent=N'
 		<variable name="vAsOfRDVoucherDate" control="txbAsOfRDVoucherDate" dataType="date" binding="" />
 
 		<variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
---8/5
+
+		--9/5
 		<variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" />
 
 
@@ -33,11 +34,15 @@ Set @XmlContent=N'
 	<datasets>
 		<dataset name="Divisions"	 queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder From D90T9999 T99 WITH(NOLOCK) INNER JOIN D91T0016 T16 WITH(NOLOCK) ON T99.DivisionID = T16.DivisionID INNER JOIN D91T0060 T60 WITH(NOLOCK) ON T99.DivisionID = T60.DivisionID  WHERE T16.Disabled = 0 AND T60.UserID = value[''pUserID''] UNION ALL Select N''%'' as DivisionID, N''[Tất cả]'' as DivisionName, 0 AS DisplayOrder ORDER BY DisplayOrder, T99.DivisionID"/>
 		<dataset name="Periods"		 queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear From D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC"/>
---start 8/5
+		--start 9/5
 		<dataset name="StatusSO"	queryText="EXEC D05P0007 ''Status_D05F1621'' ,value[''vDivisionID''], value[''pUserID''], value[''pLanguage''], value[''pCodeTable''], '''', 4" />
---end 8/5
- 		<dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D30P0706  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],0,value[''vVoucherNo''],'''','''',value[''vStatusSO''] "  />
-		<dataset name="dsGridData"  queryText="EXEC Z_Q00713_D30P0706  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],1,value[''vVoucherNo''],'''','''',value[''vStatusSO''] " />
+
+--end 9/5
+ 		<dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D30P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],0,value[''vVoucherNo''],'''','''',value[''vStatusSO''] " />
+		<dataset name="dsGridData"  queryText="EXEC Z_Q00713_D30P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],1,value[''vVoucherNo''],'''','''',value[''vStatusSO''] " />
+	
+		--<dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D05P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],0,value[''vVoucherNo''] "  />
+		--<dataset name="dsGridData"  queryText="EXEC Z_Q00713_D05P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],1,value[''vVoucherNo''] " />
 	
 	</datasets>
 
@@ -56,14 +61,15 @@ Set @XmlContent=N'
 
 		<control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
 		<control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+		--9/5
+		<control name="tdbcStatusSO" type="combo" dataset="StatusSO" dataDependent="tdbcDivisionID" />
+
 
 		<control name="txbRDVoucherDateFrom" type="DateEdit" require="true"></control>
 		<control name="txbRDVoucherDateTo" type="DateEdit" require="true"></control>
 
 		<control name="txbAsOfRDVoucherDate" type="DateEdit" require="true"></control>
 
-		--8/5
-		<control name="tdbcStatusSO" type="combo" dataset="StatusSO" dataDependent="tdbcDivisionID" />
 
 		<control name="btnFilter" type ="button" event="Click" command ="cmdFilter" hotKey="F5" isAutoClick = "true"/>
 		<control name="mnuPrint" event="Click" command ="cmdPrint"/>
@@ -172,20 +178,28 @@ Set @XAMLContent=N'
         <dxg:LookUpEdit x:Name="tdbcDivisionID" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="DivisionID" ValueMember="DivisionID" AutoPopulateColumns="False" PopupWidth="250" ImmediatePopup="True" PopupContentTemplate="{DynamicResource DivisionIDStadard}" />
         <!--End Don vi-->
 
+--9/5
+		<!--Begin Trang thai-->
+		<Label x:Name="lblStatusSO" Content="Trạng thái đơn hàng" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="20" Width="Auto" Grid.Column="5" Grid.Row="0"/>
+        <dxg:LookUpEdit x:Name="tdbcStatusSO" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="IDName" ValueMember="IDKey" AutoPopulateColumns="False" PopupWidth="250" ImmediatePopup="True"  />
+        <!--End Trang thai-->
+
 		<!--Begin Ky-->
         <RadioButton Content="Kỳ" x:Name="chkPeriod" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="22" Width="30" Grid.Row="1" Grid.Column="0" IsChecked = "True"/>
         <dxg:LookUpEdit x:Name="tdbcPeriodIDFr" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="Period" ValueMember="Period" AutoPopulateColumns="False" PopupWidth="20" ImmediatePopup="True" PopupContentTemplate="{DynamicResource PeriodIDStadard}" />
         <dxg:LookUpEdit x:Name="tdbcPeriodIDTo" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="Period" ValueMember="Period" AutoPopulateColumns="False" PopupWidth="20" ImmediatePopup="True" PopupContentTemplate="{DynamicResource PeriodIDStadard}" />
         <!--End Ky-->
 
-        <RadioButton Content="Ngày" x:Name="chkRDVoucherDate" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Height="22" Width="Auto" />
+        <RadioButton Content="Ngàyy" x:Name="chkRDVoucherDate" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Height="22" Width="Auto" />
         <dxe:DateEdit x:Name="txbRDVoucherDateFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True"/>
         <dxe:DateEdit x:Name="txbRDVoucherDateTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True"/>
  
 		<!--Begin don han-->
-		<Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
+		<Label x:Name="lblVoucherNo" Content="Số chứng từ thay thế thành Ngày giao hàng" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
+
         <dxg:PrintTextEdit x:Name="txbVoucherNo" EditValue="VoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" 
 		Width="120" Grid.Column="6" Grid.Row="1" />
+
        
 
 
@@ -241,3 +255,4 @@ select *from LEMONSYS..D00T0147 where PerrmissionSreenID = N'Z_Q00713_D30F0707'
 
 select *from LEMONSYS..D00T0147 where MenuItemID='ZQ00713D05F0707'
 select *from LEMONSYS..D00T0140 where ModuleID=N'D31' and ScreenNameVietNameseU=N'Lệnh sản xuất'
+
