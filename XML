@@ -10,10 +10,10 @@
     <variable name="vchkRDVoucherDate" control="chkRDVoucherDate" dataType="number" binding="" />
     <variable name="vRDVoucherDateFrom" control="txbRDVoucherDateFrom" dataType="date" binding="" />
     <variable name="vRDVoucherDateTo" control="txbRDVoucherDateTo" dataType="date" binding="" />
-
-		--<variable name="vchkEndDate" control="chkEndDate" dataType="number" binding="" />
-
-		--<variable name="vAsOfRDVoucherDate" control="txbAsOfRDVoucherDate" dataType="date" binding="" /><variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" /><!-- 9/5  --><variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" /></variables>
+    <variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
+    <!-- 9/5  -->
+    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" />
+  </variables>
   <datasets>
     <dataset name="Divisions" queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder From D90T9999 T99 WITH(NOLOCK) INNER JOIN D91T0016 T16 WITH(NOLOCK) ON T99.DivisionID = T16.DivisionID INNER JOIN D91T0060 T60 WITH(NOLOCK) ON T99.DivisionID = T60.DivisionID  WHERE T16.Disabled = 0 AND T60.UserID = value['pUserID']    UNION ALL Select N'%' as DivisionID, N'[Tất cả]' as DivisionName, 0 AS DisplayOrder ORDER BY DisplayOrder, DivisionID" />
     <dataset name="Periods" queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), ' ', '0') + '/' + STR(TranYear, 4) AS Period, TranMonth, TranYear From D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC" />
@@ -29,9 +29,7 @@
       <add type="addCol" control="tdbgGrid" dataset="dsCreateCol" />
       <add type="load" control="tdbgGrid" dataset="dsGridData" />
     </command>
-		--<command name="cmdPrint">
-		--	<add type="print" reportTypeID="Z_B00107_D07F3021" moduleID="49" sqlMain="EXEC Z_B00107_D07P3021  value['vDivisionID'], value['vchkPeriod'], value['vPeriodFr'], value['vPeriodTo'], value['vchkRDVoucherDate'], value['vRDVoucherDateFrom'], value['vRDVoucherDateTo'], value['vWarehouseID'], value['vInventoryID'], value['vTypeCodeID'], value['vICodeID'], value['vLocationNo'], value['vTimelineEXPCode'], value['vAsOfRDVoucherDate'], value['pUserID'], value['pHostName'], value['pCodeTable'], value['pLanguage'],1, 'PrintExcel' " />
-		--</command></commands>
+  </commands>
   <form-items>
     <control name="tdbcDivisionID" type="combo" dataset="Divisions" event="SelectedIndexChanged" required="true" />
     <control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID" />
@@ -40,9 +38,7 @@
     <control name="tdbcStatusSO" type="combo" dataset="StatusSO" dataDependent="tdbcDivisionID" />
     <control name="txbRDVoucherDateFrom" type="DateEdit" require="true" />
     <control name="txbRDVoucherDateTo" type="DateEdit" require="true" />
-
-		--<control name="txbAsOfRDVoucherDate" type="DateEdit" require="true" />    -----isAutoClick = "true" duoi fileer
-
-
-		<control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5" /><control name="mnuPrint" event="Click" command="cmdPrint" /><control name="tdbgGrid" type="grid" /></form-items>
+    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5" />
+    <control name="tdbgGrid" type="grid" />
+  </form-items>
 </form>
