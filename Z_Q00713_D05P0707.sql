@@ -10,13 +10,13 @@
 
 
 -- <Summary>
----- Z_Q00713_D30F0707
+---- Z_Q00713_D05F0707
 -- <Param>
 ---- 
 -- <Return>
 ---- 
 -- <Reference>
----- D05 \ Thong ke phan tich \ *Thong ke don hang ban - Z_Q00713_D30F0707
+---- D05 \ Thong ke phan tich \ *Thong ke don hang ban - Z_Q00713_D05F0707
 -- <History>
 ---- Create on 04/05/2026 by DATNGUYEN(ID313226)
 ---- 
@@ -39,11 +39,11 @@ ALTER PROCEDURE Z_Q00713_D05P0707
 	@DateRDVoucherDateFrom	DATETIME = '',		---- Ngay hop dong tu
 	@DateRDVoucherDateTo	DATETIME = '',	---- Ngay hop dong Den
 	@Mode					TINYINT = 0 ,
-	@VoucherNo				VARCHAR(Max) = ''
+	@VoucherNo				VARCHAR(Max) = '',
 
-	--@DeliveryDateTo DATETIME = '',
-	--@DeliveryDateFrom DATETIME= '',
-	--@StatusSO VARCHAR(50) = '%' 
+	@DeliveryDateTo DATETIME = '',
+	@DeliveryDateFrom DATETIME= '',
+	@StatusSO VARCHAR(50) = '%' 
 ) 
 AS 
 SET NOCOUNT ON
@@ -70,18 +70,18 @@ DECLARE		@SQLGenCol00 NVARCHAR(4000),
 			@FromYear		INT,
 			@ToMonth		TINYINT,
 			@ToYear			INT
-DECLARE @D90_ConvertedDecimals TINYINT, @D07_QuantityDecimals TINYINT, @D07_UnitCostDecimals TINYINT, 
-		@UnitPriceDecimal AS TINYINT,
-		@OriginalDecimal	TINYINT,
-		@ConvertedDecimal	TINYINT
-SELECT	@D90_ConvertedDecimals = D90_ConvertedDecimals,
-		@D07_QuantityDecimals = D07_QuantityDecimals,
-		@D07_UnitCostDecimals = D07_UnitCostDecimals
-FROM D91T0025 WITH(NOLOCK)
-SELECT	@UnitPriceDecimal = UnitPriceDecimals,
-		@OriginalDecimal = OriginalDecimal,
-		@ConvertedDecimal = ConvertedDecimal
-FROM	D91V0010 WHERE CurrencyID = 'VND'
+--DECLARE @D90_ConvertedDecimals TINYINT, @D07_QuantityDecimals TINYINT, @D07_UnitCostDecimals TINYINT, 
+--		@UnitPriceDecimal AS TINYINT,
+--		@OriginalDecimal	TINYINT,
+--		@ConvertedDecimal	TINYINT
+--SELECT	@D90_ConvertedDecimals = D90_ConvertedDecimals,
+--		@D07_QuantityDecimals = D07_QuantityDecimals,
+--		@D07_UnitCostDecimals = D07_UnitCostDecimals
+--FROM D91T0025 WITH(NOLOCK)
+--SELECT	@UnitPriceDecimal = UnitPriceDecimals,
+--		@OriginalDecimal = OriginalDecimal,
+--		@ConvertedDecimal = ConvertedDecimal
+--FROM	D91V0010 WHERE CurrencyID = 'VND'
 SET	@SQLGenCol00= N''
 SET	@SQLGenCol01= N''
 SET	@SQLGenCol02= N''
@@ -202,300 +202,187 @@ END
 IF @Mode = 1 
 BEGIN
 SET @SQL00 = N'
-Cột 1:[STT] Số thứ tự
-Cột 2:[Số phiếu] Số phiếu đơn hàng
-Cột 3:[Ngày nhận] Ngày nhận hàng
-Cột 4:[Ngày giao] Ngày giao hàng
-Cột 5:[Mã khách hàng] Mã Khách hàng
-Cột 6:[Tên Khách hàng] Tên Khách hàng
-Cột 7:[Tên hàng] Tên hàng hóa
-Cột 8:[Dài] Chỉ số Dài của Quy cách 01
-Cột 9:[Rộng] Chỉ số Rộng của Quy cách 01
-Cột 10:[Cao] Chỉ số Cao của Quy cách 01
+--Cột 1:[STT] Số thứ tự
+--Cột 2:[Số phiếu] Số phiếu đơn hàng
+--Cột 3:[Ngày nhận] Ngày nhận hàng
+--Cột 4:[Ngày giao] Ngày giao hàng
+--Cột 5:[Mã khách hàng] Mã Khách hàng
+--Cột 6:[Tên Khách hàng] Tên Khách hàng
+--Cột 7:[Tên hàng] Tên hàng hóa
+--Cột 8:[Dài] Chỉ số Dài của Quy cách 01
+--Cột 9:[Rộng] Chỉ số Rộng của Quy cách 01
+--Cột 10:[Cao] Chỉ số Cao của Quy cách 01
 --VD: 35.5X60X15 Dài: 35.5 Rộng: 60 Cao: 15 ( Cách nhau bởi ký tự X)
-Cột 11:[Số lượng] Số lượng đơn hàng
-Cột 12:[Khổ K] Theo công thức Rộng+Cao
-Cột 13:[Khổ D] Theo công thức ((Dài+ Rộng)*2)+4
-Cột 14:[Kết cấu] Thông tin phụ đơn hàng
-Cột 15:[Sóng] Thông tin phụ đơn hàng
+--Cột 11:[Số lượng] Số lượng đơn hàng
+--Cột 12:[Khổ K] Theo công thức Rộng+Cao
+--Cột 13:[Khổ D] Theo công thức ((Dài+ Rộng)*2)+4
+--Cột 14:[Kết cấu] Thông tin phụ đơn hàng
+--Cột 15:[Sóng] Thông tin phụ đơn hàng
 
-	
---PaperSize
---135.00000000
---SpecGT01
---43.00000000
---S_Quantity	L_Quantity
---861.29990000	638.00000000
-	select 1 AS OrderNo_,
-		 VoucherNum AS VoucherNo,CONVERT(varchar,VoucherDate,103) AS VoucherDate ,CONVERT(varchar,T2.DeliveryDate,103) AS Deliverydate,CustomerID AS ObjectID,CONVERT(Nvarchar(500),'''') AS ObjectName
-		, CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = - 1 THEN '''' ELSE  CONVERT(nvarchar,LEFT(T2.Spec01ID, CHARINDEX(''X'', T2.Spec01ID) - 1)) END as specifications1
-		, CONVERT(nvarchar,'''') as specifications2
-		,CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = -1 THEN '''' ELSE CONVERT(nvarchar,right(T2.Spec01ID, CHARINDEX(''X'', REVERSE(T2.Spec01ID)) - 1)) END as specifications3
-		,CONVERT(decimal,T4.ExOQuantity) QuantityTT
-		,T2.Spec01ID
-		,CONVERT(decimal,T2.CQuantity) QuantityKH
-		,CONVERT(decimal,T4.NUM01) OrderNo
-		,CONVERT(nvarchar,DRef5U) String01
-		,CONVERT(decimal,round(T4.PaperSize,0)) String02
-		,CONVERT(nvarchar,DRef4U) String03
-		,CONVERT(decimal,round(T4.SpecGT01,2))  as String04
-		,CONVERT(decimal,round(T4.SpecGT02,2)) as String05
-		,CONVERT(decimal,round(T4.PaperQuantity,2)) Quantity
-		,CONVERT(nvarchar,'''') String06
-		,CONVERT(nvarchar,'''') String07
-		,CONVERT(nvarchar,'''') String08
-		,CONVERT(nvarchar,'''') String09
+SELECT
+		T1.QuotationID,
+		T2.QuotationItemID,
+		ISNULL(T2.OrderNum, 0) AS OrderNum,
+
+		T1.VoucherNum AS VoucherNo,
+		T1.VoucherDate AS VoucherDateRaw,
+		CONVERT(VARCHAR(10), T1.VoucherDate, 103) AS VoucherDate,
+
+		T2.DeliveryDate AS DeliveryDateRaw,
+		CONVERT(VARCHAR(10), T2.DeliveryDate, 103) AS Deliverydate,
+
+		T1.ObjectTypeID,
+		T1.CustomerID AS ObjectID,
+		ISNULL(NULLIF(T1.CustomerNameU, N''''), ISNULL(O.ObjectNameU, N'''')) AS ObjectName,
+
+		T2.InventoryID,
+		ISNULL(NULLIF(T2.ItemNameU, N''''), ISNULL(I.InventoryNameU, N'''')) AS InventoryName,
+
+		ISNULL(T2.Spec01ID, '''') AS Spec01ID,
+
+		CASE 
+			WHEN CHARINDEX(''X'', UPPER(ISNULL(T2.Spec01ID, ''''))) > 1
+				THEN LEFT(ISNULL(T2.Spec01ID, ''''), CHARINDEX(''X'', UPPER(ISNULL(T2.Spec01ID, ''''))) - 1)
+			ELSE ''''
+		END AS LengthValue,
+
+		CONVERT(NVARCHAR(500), '''') AS WidthValue,
+
+		CASE 
+			WHEN CHARINDEX(''X'', REVERSE(UPPER(ISNULL(T2.Spec01ID, '''')))) > 0
+			     AND CHARINDEX(''X'', UPPER(ISNULL(T2.Spec01ID, ''''))) > 0
+				THEN RIGHT(ISNULL(T2.Spec01ID, ''''), CHARINDEX(''X'', REVERSE(UPPER(ISNULL(T2.Spec01ID, '''')))) - 1)
+			ELSE ''''
+		END AS HeightValue,
+
+		CONVERT(DECIMAL(28, 8), ISNULL(NULLIF(T2.CQuantity, 0), T2.Quantity)) AS Quantity,
+
+		CONVERT(NVARCHAR(500), '''') AS KhoK,
+		CONVERT(NVARCHAR(500), '''') AS KhoD,
+
+		ISNULL(T2.DRef4U, '''') AS StructureID,
+		ISNULL(T2.DRef5U, '''') AS WaveID,
+
+		T1.StatusVoucher AS StatusSO
+
+	INTO #D05T0016_1
+
+	FROM D05T0016 T1 WITH(NOLOCK)
+	INNER JOIN D05T0017 T2 WITH(NOLOCK)
+		ON T1.QuotationID = T2.QuotationID
+	LEFT JOIN Object O WITH(NOLOCK)
+		ON O.ObjectTypeID = T1.ObjectTypeID
+		AND O.ObjectID = T1.CustomerID
+	LEFT JOIN D07T0002 I WITH(NOLOCK)
+		ON I.InventoryID = T2.InventoryID
+
+	WHERE 1 = 1
+		AND T1.ProfessionKind IN (''O'', ''RO'')
 		'
 SET @SQL01 = N'
-		,CONVERT(nvarchar,'''') String10
-		,CONVERT(nvarchar,'''') String11
+		' + CASE 
+				WHEN ISNULL(@DivisionID, '') IN ('', '%') THEN '' 
+				ELSE ' AND T1.DivisionID = ''' + REPLACE(@DivisionID, '''', '''''') + ''' '
+			END + '
 
-		,CONVERT(decimal,round(T4.S_Quantity,0))  String12
-		,CONVERT(decimal,round(T4.L_Quantity,0))   String13
+		' + CASE 
+				WHEN @IsPeriod = 1 THEN 
+					' AND (T1.TranMonth + T1.TranYear * 100) BETWEEN ' + @FromPeriod + ' AND ' + @ToPeriod + ' '
+				ELSE ''
+			END + '
 
-		,CONVERT(nvarchar,T2.InventoryID )+ ''_1'' LocationNo
-		,CONVERT(nvarchar,'''' ) StringD
-		,T4.ProOrderID
-		,T3.Icode06ID AS Icode06
-		,T1.ObjectTypeID
-		INTO #D05T0016_1
-		from D05T0016 T1
-		INNER JOIN D05T0017 T2 ON T1.QuotationID = T2.QuotationID
-		INNER JOIN D07T0002 T3 ON T2.InventoryID = T3.InventoryID
-		INNER JOIN D31T2310 T4 ON T2.QuotationID = T4.SalesOrderID AND T2.QuotationItemID = T4.SalesOrderItemID
+		' + CASE 
+				WHEN @IsRDVoucherDate = 1 THEN 
+					' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' 
+					+ CONVERT(VARCHAR(10), @DateRDVoucherDateFrom, 112) 
+					+ ''' AND ''' 
+					+ CONVERT(VARCHAR(10), @DateRDVoucherDateTo, 112) 
+					+ ''' '
+				ELSE ''
+			END + '
 
-		WHERE 1 = 1 
-		'+CASE WHEN @IsPeriod = 1 THEN 'AND ( T1.Tranmonth+Tranyear*100) BETWEEN '+@FromPeriod+' AND '+@ToPeriod+' '  ELSE '' END +'
-		'+CASE WHEN @IsRDVoucherDate = 1 THEN 'AND CONVERT(NVARCHAR(500),VoucherDate,111) BETWEEN '''+CONVERT(NVARCHAR(500),@DateRDVoucherDateFrom,103)+''' AND '''+CONVERT(NVARCHAR(500),@DateRDVoucherDateTo,103)+''' '  ELSE '' END +'
-		'+CASE WHEN @VoucherNo = '' THEN '' ELSE 'AND T1.VoucherNum = '''+@VoucherNo+''' ' END+'
-		AND T1.ProfessionKind = ''O''
-		UNION ALL
-		select 2 AS OrderNo_,
-		 VoucherNum AS VoucherNo,CONVERT(varchar,VoucherDate,103) AS VoucherDate ,CONVERT(varchar,T2.DeliveryDate,103) AS Deliverydate,CustomerID AS ObjectID,CONVERT(Nvarchar,'''') AS ObjectName
-		, CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = - 1 THEN '''' ELSE  CONVERT(nvarchar,LEFT(T2.Spec01ID, CHARINDEX(''X'', T2.Spec01ID) - 1)) END as specifications1
-		, CONVERT(nvarchar,'''') as specifications2
-		,CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = -1 THEN '''' ELSE CONVERT(nvarchar,right(T2.Spec01ID, CHARINDEX(''X'', REVERSE(T2.Spec01ID)) - 1)) END as specifications3
-		,CONVERT(decimal,T4.ExOQuantity) QuantityTT
-		,T2.Spec01ID
-		,CONVERT(decimal,T2.CQuantity) QuantityKH
-		,CONVERT(decimal,T4.NUM01) OrderNo
-		,CONVERT(nvarchar,DRef5U) String01
-		,CONVERT(nvarchar,T4.PaperSize) String02
-		,CONVERT(nvarchar,DRef4U) String03
-		,CONVERT(nvarchar,T4.SpecGT01) String04
-		,CONVERT(nvarchar,T4.SpecGT02) String05
-		,CONVERT(decimal,T4.PaperQuantity) Quantity
-		,CONVERT(nvarchar,'''') String06
-		,CONVERT(nvarchar,'''') String07
-		,CONVERT(nvarchar,'''') String08
-		,CONVERT(nvarchar,'''') String09
-		,CONVERT(nvarchar,'''') String10
-		,CONVERT(nvarchar,'''') String11
-		,CONVERT(nvarchar,T4.S_Quantity) String12
-		,CONVERT(nvarchar,T4.L_Quantity) String13
-		,CONVERT(nvarchar,T2.InventoryID )+ ''_1'' LocationNo
-		,CONVERT(nvarchar,'''' ) StringD
-		,T4.ProOrderID
-		,T3.Icode06ID AS Icode06
-		,T1.ObjectTypeID
-		from D05T0016 T1
-		INNER JOIN D05T0017 T2 ON T1.QuotationID = T2.QuotationID
-		INNER JOIN D07T0002 T3 ON T2.InventoryID = T3.InventoryID
-		INNER JOIN D31T2310 T4 ON T2.QuotationID = T4.SalesOrderID AND T2.QuotationItemID = T4.SalesOrderItemID
-		
-		WHERE 1 = 1 
-		'+CASE WHEN @IsPeriod = 1 THEN 'AND ( T1.Tranmonth+Tranyear*100) BETWEEN '+@FromPeriod+' AND '+@ToPeriod+' '  ELSE '' END +'
-		'+CASE WHEN @IsRDVoucherDate = 1 THEN 'AND CONVERT(NVARCHAR(500),VoucherDate,111) BETWEEN '''+CONVERT(NVARCHAR(500),@DateRDVoucherDateFrom,103)+''' AND '''+CONVERT(NVARCHAR(500),@DateRDVoucherDateTo,103)+''' '  ELSE '' END +'
-		'+CASE WHEN @VoucherNo = '' THEN '' ELSE 'AND T1.VoucherNum = '''+@VoucherNo+''' ' END+'
-		AND T1.ProfessionKind = ''O''
+		' + CASE 
+				WHEN ISNULL(@VoucherNo, '') = '' THEN ''
+				ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' '
+			END + '
+
+		' + CASE 
+				WHEN ISNULL(CONVERT(VARCHAR(8), @DeliveryDateFrom, 112), '') IN ('', '19000101') THEN ''
+				ELSE ' AND CONVERT(DATE, T2.DeliveryDate) >= ''' + CONVERT(VARCHAR(10), @DeliveryDateFrom, 112) + ''' '
+			END + '
+
+		' + CASE 
+				WHEN ISNULL(CONVERT(VARCHAR(8), @DeliveryDateTo, 112), '') IN ('', '19000101') THEN ''
+				ELSE ' AND CONVERT(DATE, T2.DeliveryDate) <= ''' + CONVERT(VARCHAR(10), @DeliveryDateTo, 112) + ''' '
+			END + '
+
+		' + CASE 
+				WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN ''
+				ELSE ' AND T1.StatusVoucher = ''' + REPLACE(@StatusSO, '''', '''''') + ''' '
+			END + '
 		'SET @SQL02= N'
-		UNION ALL
-		select 3 AS OrderNo_,
-		 VoucherNum AS VoucherNo,CONVERT(varchar,VoucherDate,103) AS VoucherDate ,CONVERT(varchar,T2.DeliveryDate,103) AS Deliverydate,CustomerID AS ObjectID,CONVERT(Nvarchar,'''') AS ObjectName
-		, CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = - 1 THEN '''' ELSE  CONVERT(nvarchar,LEFT(T2.Spec01ID, CHARINDEX(''X'', T2.Spec01ID) - 1)) END as specifications1
-		, CONVERT(nvarchar,'''') as specifications2
-		,CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = -1 THEN '''' ELSE CONVERT(nvarchar,right(T2.Spec01ID, CHARINDEX(''X'', REVERSE(T2.Spec01ID)) - 1)) END as specifications3
-		,CONVERT(decimal,T4.ExOQuantity) QuantityTT
-		,T2.Spec01ID
-		,CONVERT(decimal,T2.CQuantity) QuantityKH
-		,CONVERT(decimal,T4.NUM01) OrderNo
-		,CONVERT(nvarchar,DRef5U) String01
-		,CONVERT(nvarchar,T4.PaperSize) String02
-		,CONVERT(nvarchar,DRef4U) String03
-		,CONVERT(nvarchar,T4.SpecGT01) String04
-		,CONVERT(nvarchar,T4.SpecGT02) String05
-		,CONVERT(decimal,T4.PaperQuantity) Quantity
-		,CONVERT(nvarchar,'''') String06
-		,CONVERT(nvarchar,'''') String07
-		,CONVERT(nvarchar,'''') String08
-		,CONVERT(nvarchar,'''') String09
-		,CONVERT(nvarchar,'''') String10
-		,CONVERT(nvarchar,'''') String11
-		,CONVERT(nvarchar,T4.S_Quantity) String12
-		,CONVERT(nvarchar,T4.L_Quantity) String13
-		,CONVERT(nvarchar,T2.InventoryID )+ ''_1'' LocationNo
-		,CONVERT(nvarchar,'''' ) StringD
-		,T4.ProOrderID
-		,T3.Icode06ID AS Icode06
-		,T1.ObjectTypeID
-		from D05T0016 T1
-		INNER JOIN D05T0017 T2 ON T1.QuotationID = T2.QuotationID
-		INNER JOIN D07T0002 T3 ON T2.InventoryID = T3.InventoryID
-		INNER JOIN D31T2310 T4 ON T2.QuotationID = T4.SalesOrderID AND T2.QuotationItemID = T4.SalesOrderItemID
-		
-		WHERE 1 = 1 
-		'+CASE WHEN @IsPeriod = 1 THEN 'AND ( T1.Tranmonth+Tranyear*100) BETWEEN '+@FromPeriod+' AND '+@ToPeriod+' '  ELSE '' END +'
-		'+CASE WHEN @IsRDVoucherDate = 1 THEN 'AND CONVERT(NVARCHAR(500),VoucherDate,111) BETWEEN '''+CONVERT(NVARCHAR(500),@DateRDVoucherDateFrom,103)+''' AND '''+CONVERT(NVARCHAR(500),@DateRDVoucherDateTo,103)+''' '  ELSE '' END +'
-		'+CASE WHEN @VoucherNo = '' THEN '' ELSE 'AND T1.VoucherNum = '''+@VoucherNo+''' ' END+'
-		AND T1.ProfessionKind = ''O''
+		UPDATE #D05T0016_1
+	SET WidthValue = 
+		CASE 
+			WHEN CHARINDEX(''X'', UPPER(Spec01ID)) > 0
+			     AND CHARINDEX(''X'', UPPER(Spec01ID), CHARINDEX(''X'', UPPER(Spec01ID)) + 1) > CHARINDEX(''X'', UPPER(Spec01ID))
+			THEN SUBSTRING
+				 (
+					Spec01ID,
+					CHARINDEX(''X'', UPPER(Spec01ID)) + 1,
+					CHARINDEX(''X'', UPPER(Spec01ID), CHARINDEX(''X'', UPPER(Spec01ID)) + 1) 
+						- CHARINDEX(''X'', UPPER(Spec01ID)) - 1
+				 )
+			ELSE ''''
+		END
+	WHERE ISNULL(Spec01ID, '''') <> ''''
 		
 
 
-			'SET @SQL03= N'
+		'SET @SQL03= N'
 		
-		UPDATE #D05T0016_1 
-		SET specifications2 = CASE WHEN CHARINDEX(''X'', [Spec01ID]) - 1 = -1 THEN '''' ELSE CONVERT(nvarchar,SUBSTRING([Spec01ID], CHARINDEX(''X'', [Spec01ID]) + 1,  CHARINDEX(''X'', [Spec01ID], CHARINDEX(''X'', 
-		[Spec01ID]) + 1) - CHARINDEX(''X'', [Spec01ID]) - 1 )) END
-		WHERE  LEN(Spec01ID)  - LEN(REPLACE(Spec01ID, ''x'', ''''))  = 2
-
-		select T3.LocationNo,T4.Lcode01ID,T3.CQuantity,T1.ProOrderID,MatFactor INTO #TUDT from #D05T0016_1 T1 INNER JOIN D31T2400 T2 ON T1.ProOrderID = T2.ProOrderID INNER JOIN D31T2410 T3 ON T2.MDOVoucherID = T3.MDOVoucherID
-		INNER JOIN D07T1210 T4 ON T3.LocationNo = T4.LocationNo
-
---- 3 ký tự đầu cột Kết cấu (12) so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Đáy in (22) 
-  --   - Ký tự 456 so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Sóng C (Cột 17) 
-  --   - Ký tự 789 so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Mặt B (Cột 18) 
-  --   - Ký tự 10,11,12 so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Sóng B (Cột 19) 
-  --   - Ký tự 13,14,15 so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Mặt E ( Cột 20) 
-  --   - Ký tự 16,17,18 so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Sóng E (Cột 21) 
-  --   - Ký tự 19,20,21 so với mã phân tích 1 lô của NVL, đưa mã Lô của NVL vào cột Mặt C ( Cột 16) 
-  --	(0, '''', ''String06'', N''Mặt C'', ''String06'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		--(0, '''', ''String07'', N''Sóng C'', ''String07'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		--(0, '''', ''String08'', N''Mặt B'', ''String08'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		--(0, '''', ''String09'', N''Sóng B'', ''String09'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		--(0, '''', ''String10'', N''Mặt E'', ''String10'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
-		--(0, '''', ''String11'', N''Sóng E'', ''String11'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),
+		UPDATE #D05T0016_1
+		SET 
+			KhoK = 
+				CASE 
+					WHEN ISNUMERIC(WidthValue) = 1 AND ISNUMERIC(HeightValue) = 1
+						THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), WidthValue) + CONVERT(DECIMAL(28, 8), HeightValue))
+					ELSE ''''
+				END,
+			KhoD =
+				CASE 
+					WHEN ISNUMERIC(LengthValue) = 1 AND ISNUMERIC(WidthValue) = 1
+						THEN CONVERT(NVARCHAR(500), ((CONVERT(DECIMAL(28, 8), LengthValue) + CONVERT(DECIMAL(28, 8), WidthValue)) * 2) + 4)
+					ELSE ''''
+			END
 
 
-		UPDATE T1 
-		SET T1.StringD = T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON LEFT(T1.String03,3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1
-		
-		UPDATE T1 
-		SET T1.StringD = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON LEFT(T1.String03,3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2
-
-
-
-		UPDATE T1 
-		SET T1.String07 = T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 4, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1 and T2.MatFactor = 1.47
-
-
-		UPDATE T1 
-		SET T1.String07 = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 4, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2 and T2.MatFactor = 1.47
-
-		
-		UPDATE T1 
-		SET T1.String08 = T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 7, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1
 		'SET @SQL04= N'
-		UPDATE T1 
-		SET T1.String08 = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 7, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2
-
-		UPDATE T1 
-		SET T1.String09 = T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 10, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1 and T2.MatFactor = 1.4 
-
-		UPDATE T1 
-		SET T1.String09 = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 10, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2 and T2.MatFactor = 1.4 
-
-		UPDATE T1 
-		SET T1.String10 = T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 13, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1
-
-		UPDATE T1 
-		SET T1.String10 = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 13, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2
-
-		UPDATE T1 
-		SET T1.String11 =T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 16, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1 and T2.MatFactor = 1.36
-
-		UPDATE T1 
-		SET T1.String11 = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 16, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2 and T2.MatFactor = 1.36
-
-		UPDATE T1 
-		SET T1.String06 = T2.LocationNo
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 19, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 1
-
-		UPDATE T1 
-		SET T1.String06 = Round(T2.CQuantity,0)
-		FROM #D05T0016_1 T1 
-		INNER JOIN #TUDT T2 ON SUBSTRING(T1.String03, 19, 3) = T2.Lcode01ID and T1.ProOrderID = T2.ProOrderID AND OrderNo_ = 2
-
---Icode06 của mã hàng trên đơn hàng là 
---- CTMN : Thêm chữ "Chống Thấm" ở cột 22
---- CTMT : 
---     . Cột 10 ( Sóng) là C, hoặc BC: Thêm chữ "Chống Thấm" ở cột 16 ( Mặt C)
---     . Cột 10 ( Sóng) là B, BE : Thêm chữ "Chống Thấm" ở cột 18 ( Mặt B)
---- CT2M :Thêm chữ "Chống Thấm" ở cột 22
---      . Cột 10 ( Sóng) là C, hoặc BC: Thêm chữ "Chống Thấm" ở cột 16 ( Mặt C)
---      . Cột 10 ( Sóng) là B, BE : Thêm chữ "Chống Thấm" ở cột 18 ( Mặt B)
-
-
-		UPDATE T1 
-		SET T1.String06 = N''Chống thấm''
-		FROM #D05T0016_1 T1 
-		WHERE  OrderNo_ = 3 AND (String01 = ''C'' OR String01 = ''BC'' ) AND T1.Icode06 = ''CTMT''
-
-		UPDATE T1 
-		SET T1.String08 = N''Chống thấm''
-		FROM #D05T0016_1 T1 
-		WHERE  OrderNo_ = 3 AND (String01 = ''B'' OR String01 = ''BE'' ) AND T1.Icode06 = ''CTMT''
-
-		UPDATE T1 
-		SET T1.String08 = N''Chống thấm''
-		FROM #D05T0016_1 T1 
-		WHERE  OrderNo_ = 3 AND (String01 = ''B'' OR String01 = ''BE'' ) AND T1.Icode06 = ''CT2M''
-
-		UPDATE T1 
-		SET T1.String06 = N''Chống thấm''
-		FROM #D05T0016_1 T1 
-		WHERE  OrderNo_ = 3 AND (String01 = ''C'' OR String01 = ''BC'' ) AND T1.Icode06 = ''CTMT''
-
-
-		UPDATE T1 
-		SET T1.StringD = N''Chống thấm''
-		FROM #D05T0016_1 T1 
-		WHERE  OrderNo_ = 3 AND T1.Icode06 = ''CTMN''
-
-
 		
-		UPDATE T1 
-		SET T1.ObjectName =  T2.ObjectNameU
-		FROM #D05T0016_1 T1 INNER JOIN Object T2 ON T1.ObjectID = T2.ObjectID AND T1.ObjectTypeID = T2.ObjectTypeID
+		SELECT
+				ROW_NUMBER() OVER
+				(
+					ORDER BY VoucherDateRaw DESC, VoucherNo, OrderNum, QuotationItemID
+				) AS OrderNo,
 
-		
-		
-		SELECT SUBSTRING(String03, 19, 3) as String06_,SUBSTRING(String03, 16, 3) AS String11_,SUBSTRING(String03, 13, 3) AS String10_,SUBSTRING(String03, 10, 3) AS String09_,SUBSTRING(String03, 7, 3) AS String08_,SUBSTRING(String03, 4, 3) AS String07_, * 
-		FROM #D05T0016_1 ORDER BY VoucherNo,OrderNo_
+				VoucherNo,
+				VoucherDate,
+				Deliverydate,
+				ObjectID,
+				ObjectName,
+				InventoryName,
+				LengthValue,
+				WidthValue,
+				HeightValue,
+				Quantity,
+				KhoK,
+				KhoD,
+				StructureID,
+				WaveID
+			FROM #D05T0016_1
+			ORDER BY VoucherDateRaw DESC, VoucherNo, OrderNum, QuotationItemID
+
+			DROP TABLE #D05T0016_1
 	'
 	
 	--SELECT LEN(@SQL00)
@@ -510,17 +397,17 @@ SET @SQL01 = N'
 	--SELECT LEN(@SQL09)
 	--SELECT LEN(@SQL10)
 
-	PRINT @SQL00
-	PRINT @SQL01
-	PRINT @SQL02
-	PRINT @SQL03
-	PRINT @SQL04
-	PRINT @SQL05
-	PRINT @SQL06
-	PRINT @SQL07
-	PRINT @SQL08
-	PRINT @SQL09
-	PRINT @SQL10
+	--PRINT @SQL00
+	--PRINT @SQL01
+	--PRINT @SQL02
+	--PRINT @SQL03
+	--PRINT @SQL04
+	--PRINT @SQL05
+	--PRINT @SQL06
+	--PRINT @SQL07
+	--PRINT @SQL08
+	--PRINT @SQL09
+	--PRINT @SQL10
 
 
 	EXEC (@SQL00 + @SQL01 + @SQL02 + @SQL03 + @SQL04 + @SQL05 + @SQL06 + @SQL07 + @SQL08 + @SQL09 + @SQL10)
