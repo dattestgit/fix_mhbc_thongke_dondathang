@@ -18,12 +18,12 @@ Set @XmlContent=N'
 	    <variable name="vchkRDVoucherDate" control="chkRDVoucherDate" dataType="number" binding="" />
 	    <variable name="vRDVoucherDateFrom" control="txbRDVoucherDateFrom" dataType="date" binding="" />
 	    <variable name="vRDVoucherDateTo" control="txbRDVoucherDateTo" dataType="date" binding="" />
+	 	
 	
 	    <variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
 	
-	    <variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
-	    <variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
-	
+		<variable name="vDeliveryDate" control="txbDeliveryDate" dataType="date" binding="" />
+			
 	    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" />
 	</variables>
 
@@ -39,11 +39,11 @@ Set @XmlContent=N'
 	
 	    <dataset name="dsCreateCol"
 	        queryText="EXEC Z_Q00713_D05P0707 
-	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vDeliveryDateTo''], value[''vDeliveryDateFrom''], value[''vStatusSO'']" />
+	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vDeliveryDate''], value[''vStatusSO'']" />
 	
 	    <dataset name="dsGridData"
 	        queryText="EXEC Z_Q00713_D05P0707 
-	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vDeliveryDateTo''], value[''vDeliveryDateFrom''], value[''vStatusSO'']" />
+	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vDeliveryDate''], value[''vStatusSO'']" />
 	</datasets>
 
 		<commands>
@@ -52,9 +52,7 @@ Set @XmlContent=N'
 			<add type="addCol" control="tdbgGrid" dataset="dsCreateCol"/>
 			<add type="load" control="tdbgGrid" dataset="dsGridData"/>
 		</command>
-		<command name="cmdPrint">
-			<add type = "print" reportTypeID = "Z_B00107_D07F3021" moduleID ="49" sqlMain = "EXEC Z_B00107_D07P3021  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], value[''vWarehouseID''], value[''vInventoryID''], value[''vTypeCodeID''], value[''vICodeID''], value[''vLocationNo''], value[''vTimelineEXPCode''], value[''vAsOfRDVoucherDate''], value[''pUserID''], value[''pHostName''], value[''pCodeTable''], value[''pLanguage''],1, ''PrintExcel'' " />
-		</command>
+
 	</commands>
 	<form-items>
 	    <control name="tdbcDivisionID" type="combo" dataset="Divisions" event="SelectedIndexChanged" required="true"/>
@@ -67,8 +65,8 @@ Set @XmlContent=N'
 	    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
 	    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
 	
-	    <control name="txbDeliveryDateFrom" type="DateEdit"/>
-	    <control name="txbDeliveryDateTo" type="DateEdit"/>
+	    <control name="txbDeliveryDate" type="DateEdit"/>
+
 	
 	    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5"/>
 	    <control name="tdbgGrid" type="grid"/>
@@ -156,6 +154,7 @@ Set @XAMLContent=N'
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
+	 		<RowDefinition Height="40" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -190,11 +189,14 @@ Set @XAMLContent=N'
 		<Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
         <dxg:PrintTextEdit x:Name="txbVoucherNo" EditValue="VoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" 
 		Width="120" Grid.Column="6" Grid.Row="1" />
+	 
+
+		<Label x:Name="lblDeliveryDate" Content="Ngày giao" Grid.Row="3" Grid.Column="0" Margin="0,10,0,0" Height="20" />
+		<dxe:DateEdit x:Name="txbDeliveryDate" Grid.Row="3" Grid.Column="1" Width="120" Height="22" Margin="0,10,0,0" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
 
 	 
-        <Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="0" Grid.Column="5" Margin="0,10,0,0" Height="20" />
-
-		<dxe:LookUpEdit x:Name="tdbcStatusSO"
+	 	<Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="0" Grid.Column="5" Margin="0,10,0,0" Height="20" />
+		<dxg:LookUpEdit x:Name="tdbcStatusSO"
 		                Grid.Row="0"
 		                Grid.Column="6"
 		                Width="120"
@@ -203,9 +205,27 @@ Set @XAMLContent=N'
 		                DisplayMember="IDName"
 		                ValueMember="IDKey"
 		                AutoPopulateColumns="False"
-		                PopupWidth="250"
-		                ImmediatePopup="True" />
-
+		                PopupWidth="280"
+		                ImmediatePopup="True">
+		    <dxg:LookUpEdit.PopupContentTemplate>
+		        <DataTemplate>
+		            <dxg:GridControl>
+		                <dxg:GridControl.Columns>
+		                    <dxg:GridColumn FieldName="IDKey" Header="Mã" Width="70" />
+		                    <dxg:GridColumn FieldName="IDName" Header="Trạng thái" Width="180" />
+		                </dxg:GridControl.Columns>
+		                <dxg:GridControl.View>
+		                    <dxg:TableView AutoWidth="False"
+		                                   ShowGroupPanel="False"
+		                                   ShowIndicator="False"
+		                                   AllowEditing="False"
+		                                   ShowAutoFilterRow="False" />
+		                </dxg:GridControl.View>
+		            </dxg:GridControl>
+		        </DataTemplate>
+		    </dxg:LookUpEdit.PopupContentTemplate>
+		</dxg:LookUpEdit>
+							
 
 		<!--Begin Button Loc-->
 		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
@@ -213,7 +233,7 @@ Set @XAMLContent=N'
 		<!--Begin Button Loc-->
 
 		<!--Begin Grid-->
-        <L3:L3GridControl x:Name="tdbgGrid" Grid.Row="3" Grid.ColumnSpan="18" AutoExpandAllGroups="True">
+        <L3:L3GridControl x:Name="tdbgGrid" Grid.Row="4" Grid.ColumnSpan="18" AutoExpandAllGroups="True">
             <!--Menu-->
             <dxg:GridControl.ContextMenu>
                 <ContextMenu>
@@ -245,17 +265,17 @@ IF NOT EXISTS(SELECT TOP 1 1 FROM D00T0147 WITH(NOLOCK) WHERE MenuItemID = 'ZQ00
 BEGIN 
 	INSERT INTO D00T0147(ModuleID, MenuItemID, MenuGroupID, DisplayOrder, PerrmissionSreenID, FormID, ProgramName, ProgramType, Parameter, LCode, 
 	Disabled, IsAnchor, IsBlance, SqlCheckForm, XAMLContent, XmlContent, XmlContent01, XAMLContent01)
-	VALUES (N'05',N'ZQ00713D05F0707',N'I',400,N'Z_Q00713_D30F0707',N'D89F4000',N'D89D4951',N'DAF40',N'',N'',0,0,0,N'',@XAMLContent,@XmlContent,@XmlContent01,@XAMLContent01)
+	VALUES (N'05',N'ZQ00713D05F0707',N'I',400,N'Z_Q00713_D05F0707',N'D89F4000',N'D89D4951',N'DAF40',N'',N'',0,0,0,N'',@XAMLContent,@XmlContent,@XmlContent01,@XAMLContent01)
 END
 ELSE
 BEGIN 
 	UPDATE D00T0147
-	SET ModuleID = N'05',MenuItemID = N'ZQ00713D05F0707',MenuGroupID = N'I',DisplayOrder = 410,PerrmissionSreenID = N'Z_Q00713_D30F0707',
+	SET ModuleID = N'05',MenuItemID = N'ZQ00713D05F0707',MenuGroupID = N'I',DisplayOrder = 410,PerrmissionSreenID = N'Z_Q00713_D05F0707',
 	 FormID = N'D89F4000', ProgramName = N'D89D4951', ProgramType = N'DAF40', SqlCheckForm = N'', Disabled = 0,XmlContent = @XmlContent,
 	  XAMLContent = @XAMLContent, XmlContent01 = @XmlContent01, XAMLContent01 = @XAMLContent01
 	WHERE MenuItemID = 'ZQ00713D05F0707'
 END
-select *from LEMONSYS..D00T0147 where PerrmissionSreenID = N'Z_Q00713_D30F0707'
+select *from LEMONSYS..D00T0147 where PerrmissionSreenID = N'Z_Q00713_D05F0707'
 
 select *from LEMONSYS..D00T0147 where MenuItemID='ZQ00713D05F0707'
 select *from LEMONSYS..D00T0140 where ModuleID=N'D31' and ScreenNameVietNameseU=N'Lệnh sản xuất'
