@@ -1,5 +1,5 @@
 
-CREATE PROCEDURE Z_Q00713_D05P0707
+ALTER PROCEDURE Z_Q00713_D05P0707
 (
     @DivisionID              VARCHAR(50)  = '',
     @IsPeriod                TINYINT      = 0,
@@ -62,13 +62,13 @@ SET @SQL07 = N''
 SET @SQL08 = N''
 SET @SQL09 = N''
 SET @SQL10 = N''
-SET @FromMonth = TRY_CONVERT(TINYINT, LEFT(ISNULL(@PeriodFrom, ''), 2))
-SET @FromYear  = TRY_CONVERT(INT, RIGHT(ISNULL(@PeriodFrom, ''), 4))
-SET @ToMonth   = TRY_CONVERT(TINYINT, LEFT(ISNULL(@PeriodTo, ''), 2))
-SET @ToYear    = TRY_CONVERT(INT, RIGHT(ISNULL(@PeriodTo, ''), 4))
+SET @FromMonth = LEFT(ISNULL(@PeriodFrom, ''), 2)
+SET @FromYear  = RIGHT(ISNULL(@PeriodFrom, ''), 4)
+SET @ToMonth   = LEFT(ISNULL(@PeriodTo, ''), 2)
+SET @ToYear    = RIGHT(ISNULL(@PeriodTo, ''), 4)
 
-SET @FromPeriod = CASE WHEN @FromMonth IS NOT NULL AND @FromYear IS NOT NULL THEN LTRIM(RTRIM(STR(@FromMonth + @FromYear * 100))) ELSE '' END
-SET @ToPeriod = CASE WHEN @ToMonth IS NOT NULL AND @ToYear IS NOT NULL THEN LTRIM(RTRIM(STR(@ToMonth + @ToYear * 100))) ELSE '' END
+SET @FromPeriod = CASE WHEN @IsPeriod = 1 THEN LTRIM(RTRIM(STR(@FromMonth + @FromYear * 100))) ELSE '' END
+SET @ToPeriod = CASE WHEN @IsPeriod = 1 THEN LTRIM(RTRIM(STR(@ToMonth + @ToYear * 100))) ELSE '' END
 
 IF @Mode = 0
 BEGIN
@@ -120,9 +120,7 @@ BEGIN
     (0, '''', ''KhoK'',          N''Khổ K'',            ''KhoK'',          1, 2, NULL, ''S'',  90, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
     (0, '''', ''KhoD'',          N''Khổ D'',            ''KhoD'',          1, 2, NULL, ''S'',  90, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
     (0, '''', ''StructureID'',   N''Kết cấu'',          ''StructureID'',   1, 2, NULL, ''S'', 250, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
-    (0, '''', ''WaveID'',        N''Sóng'',             ''WaveID'',        1, 2, NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
-
-    (0, '''', ''StyleExcel'',    N''StyleExcel'',       ''StyleExcel'',    1, 2, NULL, ''S'',  50, NULL, '''', ''NVARCHAR(50)'', NULL, 1, '''')
+    (0, '''', ''WaveID'',        N''Sóng'',             ''WaveID'',        1, 2, NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0, '''')
 
     SELECT *
     FROM #StructTable
@@ -158,8 +156,7 @@ BEGIN
         CONVERT(NVARCHAR(500), '''') AS KhoD,
         ISNULL(T2.DRef4U, '''') AS StructureID,
         ISNULL(T2.DRef5U, '''') AS WaveID,
-        T1.StatusVoucher AS StatusSO,
-        CONVERT(NVARCHAR(50), '''') AS StyleExcel
+        T1.StatusVoucher AS StatusSO
     INTO #D05T0016_1
     FROM D05T0016 T1 WITH(NOLOCK)
     INNER JOIN D05T0017 T2 WITH(NOLOCK) ON T1.QuotationID = T2.QuotationID
@@ -190,8 +187,8 @@ BEGIN
     SET @SQL03 = N'
     UPDATE #D05T0016_1
     SET
-        KhoK =  CASE WHEN TRY_CONVERT(DECIMAL(28, 8), WidthValue) IS NOT NULL AND TRY_CONVERT(DECIMAL(28, 8), HeightValue) IS NOT NULL  THEN CONVERT(NVARCHAR(500), TRY_CONVERT(DECIMAL(28, 8), WidthValue) + TRY_CONVERT(DECIMAL(28, 8), HeightValue) ) ELSE '''' END,
-        KhoD = CASE WHEN TRY_CONVERT(DECIMAL(28, 8), LengthValue) IS NOT NULL AND TRY_CONVERT(DECIMAL(28, 8), WidthValue) IS NOT NULL THEN CONVERT(NVARCHAR(500), ( TRY_CONVERT(DECIMAL(28, 8), LengthValue) + TRY_CONVERT(DECIMAL(28, 8), WidthValue) ) * 2 + 4 ) ELSE '''' END
+        KhoK =  CASE WHEN ISNUMBERIC (WidthValue) = 1 AND ISNUMBERIC (HeightValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), WidthValue) + CONVERT(DECIMAL(28, 8), HeightValue) ) ELSE '''' END,
+        KhoD = CASE WHEN ISNUMBERIC(LengthValue) = 1 AND ISNUMBERIC (WidthValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), LengthValue) + CONVERT(DECIMAL(28, 8), WidthValue) ) * 2 + 4 ) ELSE '''' END
     '
     SET @SQL04 = N'
     SELECT
@@ -209,9 +206,7 @@ BEGIN
         KhoK,
         KhoD,
         StructureID,
-        WaveID,
-
-        StyleExcel
+        WaveID
     FROM #D05T0016_1
     ORDER BY VoucherDateRaw DESC, VoucherNo, OrderNum, QuotationItemID
 
