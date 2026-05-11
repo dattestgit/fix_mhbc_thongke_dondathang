@@ -11,8 +11,7 @@ ALTER PROCEDURE Z_Q00713_D05P0707
     @Mode                    TINYINT      = 0,
     @VoucherNo               VARCHAR(MAX) = '',
 
-    @DeliveryDateTo          DATETIME     = NULL,
-    @DeliveryDateFrom        DATETIME     = NULL,
+    @DeliveryDate            DATETIME     = NULL,
     @StatusSO                VARCHAR(50)  = '%'
 )
 AS
@@ -171,8 +170,7 @@ BEGIN
       ' + CASE WHEN ISNULL(@IsPeriod, 0) = 1 AND ISNULL(@FromPeriod, '') <> '' AND ISNULL(@ToPeriod, '') <> '' THEN ' AND (T1.TranMonth + T1.TranYear * 100) BETWEEN ' + @FromPeriod + ' AND ' + @ToPeriod + ' ' ELSE '' END + '
       ' + CASE WHEN ISNULL(@IsRDVoucherDate, 0) = 1 AND @DateRDVoucherDateFrom IS NOT NULL AND @DateRDVoucherDateTo IS NOT NULL THEN ' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateFrom, 112) + ''' AND ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateTo, 112) + ''' ' ELSE '' END + '
       ' + CASE WHEN ISNULL(@VoucherNo, '') = '' THEN '' ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' ' END + '
-      ' + CASE WHEN @DeliveryDateFrom IS NULL THEN '' ELSE ' AND CONVERT(DATE, T2.DeliveryDate) >= ''' + CONVERT(VARCHAR(8), @DeliveryDateFrom, 112)  + ''' ' END + '
-      ' + CASE WHEN @DeliveryDateTo IS NULL THEN '' ELSE ' AND CONVERT(DATE, T2.DeliveryDate) <= ''' + CONVERT(VARCHAR(8), @DeliveryDateTo, 112) + ''' ' END + '
+      ' + CASE WHEN @DeliveryDate IS NULL THEN '' ELSE ' AND T2.DeliveryDate >= ''' + CONVERT(VARCHAR(8), @DeliveryDate, 112) + ''' AND T2.DeliveryDate < ''' + CONVERT(VARCHAR(8), DATEADD(DAY, 1, @DeliveryDate), 112) + ''' ' END + '
       ' + CASE WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN '' ELSE ' AND T1.StatusVoucher = ''' + REPLACE(@StatusSO, '''', '''''') + ''' ' END + '
     '
 
