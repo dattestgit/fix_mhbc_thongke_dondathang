@@ -1,5 +1,5 @@
 USE LEMONSYS
-GO
+
 
 Declare @XmlContent xml,@XAMLContent xml, @XmlContent01 xml,@XAMLContent01 xml
 
@@ -24,7 +24,7 @@ Set @XmlContent=N'
 	
 		<variable name="vDeliveryDate" control="txbDeliveryDate" dataType="date" binding="" />
 			
-	    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" />
+	    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="ID" />
 	</variables>
 
 	<datasets>
@@ -203,7 +203,7 @@ Set @XAMLContent=N'
 		                Height="22"
 		                Margin="0,10,0,0"
 		                DisplayMember="IDName"
-		                ValueMember="IDKey"
+		                ValueMember="ID"
 		                AutoPopulateColumns="True"
 		                PopupWidth="280"
 		                ImmediatePopup="True"/>
