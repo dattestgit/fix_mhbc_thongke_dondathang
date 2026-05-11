@@ -1,14 +1,5 @@
---IF EXISTS (SELECT TOP 1 1 FROM DBO.SYSOBJECTS WITH(NOLOCK) 
---           WHERE ID = OBJECT_ID(N'[DBO].[Z_Q00713_D05P0707]') 
---             AND OBJECTPROPERTY(ID, N'IsProcedure') = 1)
---DROP PROCEDURE [DBO].[Z_Q00713_D05P0707]
---GO
---SET QUOTED_IDENTIFIER ON
---GO
---SET ANSI_NULLS ON
---GO
 
-ALTER PROCEDURE dbo.Z_Q00713_D05P0707
+CREATE PROCEDURE Z_Q00713_D05P0707
 (
     @DivisionID              VARCHAR(50)  = '',
     @IsPeriod                TINYINT      = 0,
@@ -20,7 +11,6 @@ ALTER PROCEDURE dbo.Z_Q00713_D05P0707
     @Mode                    TINYINT      = 0,
     @VoucherNo               VARCHAR(MAX) = '',
 
-    -- Lưu ý: giữ đúng thứ tự tham số cũ để XML DAF hiện tại không phải đổi.
     @DeliveryDateTo          DATETIME     = NULL,
     @DeliveryDateFrom        DATETIME     = NULL,
     @StatusSO                VARCHAR(50)  = '%'
@@ -72,34 +62,14 @@ SET @SQL07 = N''
 SET @SQL08 = N''
 SET @SQL09 = N''
 SET @SQL10 = N''
-
-/*============================================================
-    Chuẩn hóa kỳ.
-    Period dạng MM/YYYY, ví dụ 05/2026 => 202605.
-============================================================*/
 SET @FromMonth = TRY_CONVERT(TINYINT, LEFT(ISNULL(@PeriodFrom, ''), 2))
 SET @FromYear  = TRY_CONVERT(INT, RIGHT(ISNULL(@PeriodFrom, ''), 4))
 SET @ToMonth   = TRY_CONVERT(TINYINT, LEFT(ISNULL(@PeriodTo, ''), 2))
 SET @ToYear    = TRY_CONVERT(INT, RIGHT(ISNULL(@PeriodTo, ''), 4))
 
-SET @FromPeriod = 
-    CASE 
-        WHEN @FromMonth IS NOT NULL AND @FromYear IS NOT NULL 
-            THEN LTRIM(RTRIM(STR(@FromMonth + @FromYear * 100)))
-        ELSE ''
-    END
+SET @FromPeriod = CASE WHEN @FromMonth IS NOT NULL AND @FromYear IS NOT NULL THEN LTRIM(RTRIM(STR(@FromMonth + @FromYear * 100))) ELSE '' END
+SET @ToPeriod = CASE WHEN @ToMonth IS NOT NULL AND @ToYear IS NOT NULL THEN LTRIM(RTRIM(STR(@ToMonth + @ToYear * 100))) ELSE '' END
 
-SET @ToPeriod = 
-    CASE 
-        WHEN @ToMonth IS NOT NULL AND @ToYear IS NOT NULL 
-            THEN LTRIM(RTRIM(STR(@ToMonth + @ToYear * 100)))
-        ELSE ''
-    END
-
-/*============================================================
-    MODE = 0
-    Tạo cấu trúc cột cho DAF.
-============================================================*/
 IF @Mode = 0
 BEGIN
     SET @SQLGenCol00 = N'
@@ -152,7 +122,6 @@ BEGIN
     (0, '''', ''StructureID'',   N''Kết cấu'',          ''StructureID'',   1, 2, NULL, ''S'', 250, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
     (0, '''', ''WaveID'',        N''Sóng'',             ''WaveID'',        1, 2, NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
 
-    -- Cột ẩn để không lỗi nếu XAML còn dùng FormatCondition [StyleExcel] = ''(B)''
     (0, '''', ''StyleExcel'',    N''StyleExcel'',       ''StyleExcel'',    1, 2, NULL, ''S'',  50, NULL, '''', ''NVARCHAR(50)'', NULL, 1, '''')
 
     SELECT *
@@ -166,226 +135,73 @@ BEGIN
     RETURN
 END
 
-/*============================================================
-    MODE = 1
-    Load dữ liệu báo cáo thống kê đơn hàng bán.
-============================================================*/
 IF @Mode = 1
 BEGIN
     SET @SQL00 = N'
     SELECT
-        T1.QuotationID,
-        T2.QuotationItemID,
+        T1.QuotationID,T2.QuotationItemID,
         ISNULL(T2.OrderNum, 0) AS OrderNum,
-
         T1.VoucherNum AS VoucherNo,
         T1.VoucherDate AS VoucherDateRaw,
         CONVERT(VARCHAR(10), T1.VoucherDate, 103) AS VoucherDate,
-
-        T2.DeliveryDate AS DeliveryDateRaw,
-        CONVERT(VARCHAR(10), T2.DeliveryDate, 103) AS Deliverydate,
-
-        T1.ObjectTypeID,
-        T1.CustomerID AS ObjectID,
-
+        T2.DeliveryDate AS DeliveryDateRaw,CONVERT(VARCHAR(10), T2.DeliveryDate, 103) AS Deliverydate,
+        T1.ObjectTypeID,T1.CustomerID AS ObjectID,
         ISNULL(NULLIF(T1.CustomerNameU, N''''), ISNULL(O.ObjectNameU, N'''')) AS ObjectName,
-
         T2.InventoryID,
-
-        -- Tên hàng: ưu tiên tên hàng trên đơn hàng; nếu trống thì lấy master hàng hóa.
         ISNULL(NULLIF(T2.ItemNameU, N''''), ISNULL(I.InventoryNameU, N'''')) AS InventoryName,
-
-        -- Quy cách 01, ví dụ 35.5X60X15.
-        UPPER(
-            REPLACE(
-                REPLACE(
-                    REPLACE(LTRIM(RTRIM(ISNULL(T2.Spec01ID, ''''))), N''×'', ''X''),
-                '' '', ''''),
-            '','', ''.'')
-        ) AS Spec01ID,
-
+        UPPER(REPLACE(REPLACE(REPLACE(LTRIM(RTRIM(ISNULL(T2.Spec01ID, ''''))), N''×'', ''X''), '' '', ''''), '','', ''.'')) AS Spec01ID,
         CONVERT(NVARCHAR(500), '''') AS LengthValue,
         CONVERT(NVARCHAR(500), '''') AS WidthValue,
         CONVERT(NVARCHAR(500), '''') AS HeightValue,
-
-        -- Số lượng đơn hàng: dùng luôn trường đang có trên chi tiết đơn hàng.
-        -- Nếu số lượng quy đổi CQuantity có giá trị thì lấy CQuantity, ngược lại lấy Quantity.
         CONVERT(DECIMAL(28, 8), ISNULL(NULLIF(T2.CQuantity, 0), ISNULL(T2.Quantity, 0))) AS Quantity,
-
         CONVERT(NVARCHAR(500), '''') AS KhoK,
         CONVERT(NVARCHAR(500), '''') AS KhoD,
-
-        -- Thông tin phụ đơn hàng.
         ISNULL(T2.DRef4U, '''') AS StructureID,
         ISNULL(T2.DRef5U, '''') AS WaveID,
-
         T1.StatusVoucher AS StatusSO,
-
         CONVERT(NVARCHAR(50), '''') AS StyleExcel
-
     INTO #D05T0016_1
-
     FROM D05T0016 T1 WITH(NOLOCK)
-    INNER JOIN D05T0017 T2 WITH(NOLOCK)
-        ON T1.QuotationID = T2.QuotationID
-
-    LEFT JOIN Object O WITH(NOLOCK)
-        ON O.ObjectTypeID = T1.ObjectTypeID
-       AND O.ObjectID = T1.CustomerID
-
-    LEFT JOIN D07T0002 I WITH(NOLOCK)
-        ON I.InventoryID = T2.InventoryID
-
+    INNER JOIN D05T0017 T2 WITH(NOLOCK) ON T1.QuotationID = T2.QuotationID
+	LEFT JOIN Object O WITH(NOLOCK) ON O.ObjectTypeID = T1.ObjectTypeID AND O.ObjectID = T1.CustomerID
+    LEFT JOIN D07T0002 I WITH(NOLOCK) ON I.InventoryID = T2.InventoryID
     WHERE 1 = 1
       AND T1.ProfessionKind IN (''O'', ''RO'')
     '
 
     SET @SQL01 = N'
-      ' + CASE 
-              WHEN ISNULL(@DivisionID, '') IN ('', '%') THEN ''
-              ELSE ' AND T1.DivisionID = ''' + REPLACE(@DivisionID, '''', '''''') + ''' '
-          END + '
-
-      ' + CASE 
-              WHEN ISNULL(@IsPeriod, 0) = 1 
-                   AND ISNULL(@FromPeriod, '') <> '' 
-                   AND ISNULL(@ToPeriod, '') <> ''
-              THEN ' AND (T1.TranMonth + T1.TranYear * 100) BETWEEN ' + @FromPeriod + ' AND ' + @ToPeriod + ' '
-              ELSE ''
-          END + '
-
-      ' + CASE 
-              WHEN ISNULL(@IsRDVoucherDate, 0) = 1
-                   AND @DateRDVoucherDateFrom IS NOT NULL 
-                   AND @DateRDVoucherDateTo IS NOT NULL
-              THEN ' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' 
-                    + CONVERT(VARCHAR(8), @DateRDVoucherDateFrom, 112) 
-                    + ''' AND ''' 
-                    + CONVERT(VARCHAR(8), @DateRDVoucherDateTo, 112) 
-                    + ''' '
-              ELSE ''
-          END + '
-
-      ' + CASE 
-              WHEN ISNULL(@VoucherNo, '') = '' THEN ''
-              ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' '
-          END + '
-
-      ' + CASE 
-              WHEN @DeliveryDateFrom IS NULL THEN ''
-              ELSE ' AND CONVERT(DATE, T2.DeliveryDate) >= ''' 
-                    + CONVERT(VARCHAR(8), @DeliveryDateFrom, 112) 
-                    + ''' '
-          END + '
-
-      ' + CASE 
-              WHEN @DeliveryDateTo IS NULL THEN ''
-              ELSE ' AND CONVERT(DATE, T2.DeliveryDate) <= ''' 
-                    + CONVERT(VARCHAR(8), @DeliveryDateTo, 112) 
-                    + ''' '
-          END + '
-
-      ' + CASE 
-              WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN ''
-              ELSE ' AND T1.StatusVoucher = ''' + REPLACE(@StatusSO, '''', '''''') + ''' '
-          END + '
+      ' + CASE WHEN ISNULL(@DivisionID, '') IN ('', '%') THEN '' ELSE ' AND T1.DivisionID = ''' + REPLACE(@DivisionID, '''', '''''') + ''' ' END + '
+      ' + CASE WHEN ISNULL(@IsPeriod, 0) = 1 AND ISNULL(@FromPeriod, '') <> '' AND ISNULL(@ToPeriod, '') <> '' THEN ' AND (T1.TranMonth + T1.TranYear * 100) BETWEEN ' + @FromPeriod + ' AND ' + @ToPeriod + ' ' ELSE '' END + '
+      ' + CASE WHEN ISNULL(@IsRDVoucherDate, 0) = 1 AND @DateRDVoucherDateFrom IS NOT NULL AND @DateRDVoucherDateTo IS NOT NULL THEN ' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateFrom, 112) + ''' AND ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateTo, 112) + ''' ' ELSE '' END + '
+      ' + CASE WHEN ISNULL(@VoucherNo, '') = '' THEN '' ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' ' END + '
+      ' + CASE WHEN @DeliveryDateFrom IS NULL THEN '' ELSE ' AND CONVERT(DATE, T2.DeliveryDate) >= ''' + CONVERT(VARCHAR(8), @DeliveryDateFrom, 112)  + ''' ' END + '
+      ' + CASE WHEN @DeliveryDateTo IS NULL THEN '' ELSE ' AND CONVERT(DATE, T2.DeliveryDate) <= ''' + CONVERT(VARCHAR(8), @DeliveryDateTo, 112) + ''' ' END + '
+      ' + CASE WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN '' ELSE ' AND T1.StatusVoucher = ''' + REPLACE(@StatusSO, '''', '''''') + ''' ' END + '
     '
 
     SET @SQL02 = N'
-    /*========================================================
-        Tách quy cách 01 thành Dài - Rộng - Cao.
-        Ví dụ: 35.5X60X15
-        LengthValue = 35.5
-        WidthValue  = 60
-        HeightValue = 15
-    ========================================================*/
-
     UPDATE #D05T0016_1
-    SET
-        LengthValue =
-            CASE
-                WHEN CHARINDEX(''X'', Spec01ID) > 1
-                    THEN LTRIM(RTRIM(LEFT(Spec01ID, CHARINDEX(''X'', Spec01ID) - 1)))
-                ELSE ''''
-            END,
-
-        WidthValue =
-            CASE
-                WHEN CHARINDEX(''X'', Spec01ID) > 0
-                 AND CHARINDEX(''X'', Spec01ID, CHARINDEX(''X'', Spec01ID) + 1) > CHARINDEX(''X'', Spec01ID)
-                    THEN LTRIM(RTRIM(SUBSTRING
-                    (
-                        Spec01ID,
-                        CHARINDEX(''X'', Spec01ID) + 1,
-                        CHARINDEX(''X'', Spec01ID, CHARINDEX(''X'', Spec01ID) + 1)
-                            - CHARINDEX(''X'', Spec01ID) - 1
-                    )))
-                ELSE ''''
-            END,
-
-        HeightValue =
-            CASE
-                WHEN CHARINDEX(''X'', REVERSE(Spec01ID)) > 0
-                 AND CHARINDEX(''X'', Spec01ID) > 0
-                    THEN LTRIM(RTRIM(RIGHT(Spec01ID, CHARINDEX(''X'', REVERSE(Spec01ID)) - 1)))
-                ELSE ''''
-            END
+    SET LengthValue = CASE WHEN CHARINDEX(''X'', Spec01ID) > 1 THEN LTRIM(RTRIM(LEFT(Spec01ID, CHARINDEX(''X'', Spec01ID) - 1))) ELSE '''' END,
+        WidthValue = CASE WHEN CHARINDEX(''X'', Spec01ID) > 0 AND CHARINDEX(''X'', Spec01ID, CHARINDEX(''X'', Spec01ID) + 1) > CHARINDEX(''X'', Spec01ID) THEN LTRIM(RTRIM(SUBSTRING (Spec01ID,CHARINDEX(''X'', Spec01ID) + 1,CHARINDEX(''X'', Spec01ID, CHARINDEX(''X'', Spec01ID) + 1) - CHARINDEX(''X'', Spec01ID) - 1 ))) ELSE '''' END,
+        HeightValue = CASE WHEN CHARINDEX(''X'', REVERSE(Spec01ID)) > 0 AND CHARINDEX(''X'', Spec01ID) > 0 THEN LTRIM(RTRIM(RIGHT(Spec01ID, CHARINDEX(''X'', REVERSE(Spec01ID)) - 1))) ELSE '''' END
     WHERE ISNULL(Spec01ID, '''') <> ''''
     '
 
     SET @SQL03 = N'
-    /*========================================================
-        Tính Khổ K, Khổ D.
-        Khổ K = Rộng + Cao
-        Khổ D = ((Dài + Rộng) * 2) + 4
-    ========================================================*/
-
     UPDATE #D05T0016_1
     SET
-        KhoK =
-            CASE
-                WHEN TRY_CONVERT(DECIMAL(28, 8), WidthValue) IS NOT NULL
-                 AND TRY_CONVERT(DECIMAL(28, 8), HeightValue) IS NOT NULL
-                    THEN CONVERT(NVARCHAR(500),
-                        TRY_CONVERT(DECIMAL(28, 8), WidthValue)
-                      + TRY_CONVERT(DECIMAL(28, 8), HeightValue)
-                    )
-                ELSE ''''
-            END,
-
-        KhoD =
-            CASE
-                WHEN TRY_CONVERT(DECIMAL(28, 8), LengthValue) IS NOT NULL
-                 AND TRY_CONVERT(DECIMAL(28, 8), WidthValue) IS NOT NULL
-                    THEN CONVERT(NVARCHAR(500),
-                        (
-                            TRY_CONVERT(DECIMAL(28, 8), LengthValue)
-                          + TRY_CONVERT(DECIMAL(28, 8), WidthValue)
-                        ) * 2 + 4
-                    )
-                ELSE ''''
-            END
+        KhoK =  CASE WHEN TRY_CONVERT(DECIMAL(28, 8), WidthValue) IS NOT NULL AND TRY_CONVERT(DECIMAL(28, 8), HeightValue) IS NOT NULL  THEN CONVERT(NVARCHAR(500), TRY_CONVERT(DECIMAL(28, 8), WidthValue) + TRY_CONVERT(DECIMAL(28, 8), HeightValue) ) ELSE '''' END,
+        KhoD = CASE WHEN TRY_CONVERT(DECIMAL(28, 8), LengthValue) IS NOT NULL AND TRY_CONVERT(DECIMAL(28, 8), WidthValue) IS NOT NULL THEN CONVERT(NVARCHAR(500), ( TRY_CONVERT(DECIMAL(28, 8), LengthValue) + TRY_CONVERT(DECIMAL(28, 8), WidthValue) ) * 2 + 4 ) ELSE '''' END
     '
-
     SET @SQL04 = N'
-    /*========================================================
-        Trả dữ liệu đúng thứ tự cột báo cáo.
-        Không trả các cột kỹ thuật như QuotationID, QuotationItemID.
-    ========================================================*/
-
     SELECT
-        ROW_NUMBER() OVER
-        (
-            ORDER BY VoucherDateRaw DESC, VoucherNo, OrderNum, QuotationItemID
-        ) AS OrderNo,
-
+        ROW_NUMBER() OVER (ORDER BY VoucherDateRaw DESC, VoucherNo, OrderNum, QuotationItemID ) AS OrderNo,
         VoucherNo,
         VoucherDate,
         Deliverydate,
         ObjectID,
         ObjectName,
         InventoryName,
-
         LengthValue,
         WidthValue,
         HeightValue,
@@ -416,8 +232,4 @@ BEGIN
 
     RETURN
 END
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-SET ANSI_NULLS ON
 GO
