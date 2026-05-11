@@ -187,8 +187,8 @@ BEGIN
     SET @SQL03 = N'
     UPDATE #D05T0016_1
     SET
-        KhoK =  CASE WHEN ISNUMBERIC (WidthValue) = 1 AND ISNUMBERIC (HeightValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), WidthValue) + CONVERT(DECIMAL(28, 8), HeightValue) ) ELSE '''' END,
-        KhoD = CASE WHEN ISNUMBERIC(LengthValue) = 1 AND ISNUMBERIC (WidthValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), LengthValue) + CONVERT(DECIMAL(28, 8), WidthValue) ) * 2 + 4 ) ELSE '''' END
+        KhoK =  CASE WHEN ISNUMERIC (WidthValue) = 1 AND ISNUMERIC (HeightValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), WidthValue) + CONVERT(DECIMAL(28, 8), HeightValue) ) ELSE '''' END,
+        KhoD = CASE WHEN ISNUMERIC(LengthValue) = 1 AND ISNUMERIC (WidthValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), LengthValue) + CONVERT(DECIMAL(28, 8), WidthValue) ) * 2 + 4 ) ELSE '''' END
     '
     SET @SQL04 = N'
     SELECT
