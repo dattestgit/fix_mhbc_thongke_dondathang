@@ -1,5 +1,5 @@
-﻿USE LEMONSYS
-
+USE LEMONSYS
+GO
 
 Declare @XmlContent xml,@XAMLContent xml, @XmlContent01 xml,@XAMLContent01 xml
 
@@ -204,28 +204,9 @@ Set @XAMLContent=N'
 		                Margin="0,10,0,0"
 		                DisplayMember="IDName"
 		                ValueMember="IDKey"
-		                AutoPopulateColumns="False"
+		                AutoPopulateColumns="True"
 		                PopupWidth="280"
-		                ImmediatePopup="True">
-		    <dxg:LookUpEdit.PopupContentTemplate>
-		        <DataTemplate>
-		            <dxg:GridControl>
-		                <dxg:GridControl.Columns>
-		                    <dxg:GridColumn FieldName="IDKey" Header="Mã" Width="70" />
-		                    <dxg:GridColumn FieldName="IDName" Header="Trạng thái" Width="180" />
-		                </dxg:GridControl.Columns>
-		                <dxg:GridControl.View>
-		                    <dxg:TableView AutoWidth="False"
-		                                   ShowGroupPanel="False"
-		                                   ShowIndicator="False"
-		                                   AllowEditing="False"
-		                                   ShowAutoFilterRow="False" />
-		                </dxg:GridControl.View>
-		            </dxg:GridControl>
-		        </DataTemplate>
-		    </dxg:LookUpEdit.PopupContentTemplate>
-		</dxg:LookUpEdit>
-							
+		                ImmediatePopup="True"/>
 
 		<!--Begin Button Loc-->
 		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
@@ -277,6 +258,5 @@ BEGIN
 END
 select *from LEMONSYS..D00T0147 where PerrmissionSreenID = N'Z_Q00713_D05F0707'
 
-select *from LEMONSYS..D00T0147 where MenuItemID='ZQ00713D05F0707'
 select *from LEMONSYS..D00T0140 where ModuleID=N'D31' and ScreenNameVietNameseU=N'Lệnh sản xuất'
 
