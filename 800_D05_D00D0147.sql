@@ -9,32 +9,41 @@ Set @XmlContent=N'
 		<parameter name="pFormIDPermission" dataType="text" value="ZQ00713D05F0707" />
 	</parameters>
 	<variables>
-		<variable name="vDivisionID" control="tdbcDivisionID" dataType="text" binding="DivisionID"/>
-
-		<variable name="vchkPeriod" control="chkPeriod" dataType="number" binding="" />
-		<variable name="vPeriodFr" control="tdbcPeriodIDFr" dataType="text" binding="Period"/>
-		<variable name="vPeriodTo" control="tdbcPeriodIDTo" dataType="text" binding="Period"/>	
-
-		<variable name="vchkRDVoucherDate" control="chkRDVoucherDate" dataType="number" binding="" />
-		<variable name="vRDVoucherDateFrom" control="txbRDVoucherDateFrom" dataType="date" binding="" />
-		<variable name="vRDVoucherDateTo" control="txbRDVoucherDateTo" dataType="date" binding="" />
-
-		<variable name="vchkEndDate" control="chkEndDate" dataType="number" binding="" />
-
-		<variable name="vAsOfRDVoucherDate" control="txbAsOfRDVoucherDate" dataType="date" binding="" />
-
-		<variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
-
-
+	    <variable name="vDivisionID" control="tdbcDivisionID" dataType="text" binding="DivisionID"/>
+	
+	    <variable name="vchkPeriod" control="chkPeriod" dataType="number" binding="" />
+	    <variable name="vPeriodFr" control="tdbcPeriodIDFr" dataType="text" binding="Period"/>
+	    <variable name="vPeriodTo" control="tdbcPeriodIDTo" dataType="text" binding="Period"/>
+	
+	    <variable name="vchkRDVoucherDate" control="chkRDVoucherDate" dataType="number" binding="" />
+	    <variable name="vRDVoucherDateFrom" control="txbRDVoucherDateFrom" dataType="date" binding="" />
+	    <variable name="vRDVoucherDateTo" control="txbRDVoucherDateTo" dataType="date" binding="" />
+	
+	    <variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
+	
+	    <variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
+	    <variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
+	
+	    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" />
 	</variables>
 
 	<datasets>
-		<dataset name="Divisions"	 queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder From D90T9999 T99 WITH(NOLOCK) INNER JOIN D91T0016 T16 WITH(NOLOCK) ON T99.DivisionID = T16.DivisionID INNER JOIN D91T0060 T60 WITH(NOLOCK) ON T99.DivisionID = T60.DivisionID  WHERE T16.Disabled = 0 AND T60.UserID = value[''pUserID''] UNION ALL Select N''%'' as DivisionID, N''[Tất cả]'' as DivisionName, 0 AS DisplayOrder ORDER BY DisplayOrder, T99.DivisionID"/>
-		<dataset name="Periods"		 queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear From D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC"/>
-
-		<dataset name="dsCreateCol" queryText="EXEC Z_Q00713_D05P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],0,value[''vVoucherNo''] "  />
-		<dataset name="dsGridData"  queryText="EXEC Z_Q00713_D05P0707  value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''],1,value[''vVoucherNo''] " />
+	    <dataset name="Divisions"
+	        queryText="SELECT DISTINCT T99.DivisionID AS DivisionID, T16.DivisionNameU AS DivisionName, 1 AS DisplayOrder FROM D90T9999 T99 WITH(NOLOCK) INNER JOIN D91T0016 T16 WITH(NOLOCK) ON T99.DivisionID = T16.DivisionID INNER JOIN D91T0060 T60 WITH(NOLOCK) ON T99.DivisionID = T60.DivisionID WHERE T16.Disabled = 0 AND T60.UserID = value[''pUserID''] UNION ALL SELECT N''%'' AS DivisionID, N''[Tất cả]'' AS DivisionName, 0 AS DisplayOrder ORDER BY DisplayOrder, DivisionID" />
 	
+	    <dataset name="Periods"
+	        queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear FROM D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC" />
+	
+	    <dataset name="StatusSO"
+	        queryText="EXEC D05P0007 ''Status_D05F1621'', value[''vDivisionID''], value[''pUserID''], value[''pLanguage''], value[''pCodeTable''], '''', 4" />
+	
+	    <dataset name="dsCreateCol"
+	        queryText="EXEC Z_Q00713_D05P0707 
+	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vDeliveryDateTo''], value[''vDeliveryDateFrom''], value[''vStatusSO'']" />
+	
+	    <dataset name="dsGridData"
+	        queryText="EXEC Z_Q00713_D05P0707 
+	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vDeliveryDateTo''], value[''vDeliveryDateFrom''], value[''vStatusSO'']" />
 	</datasets>
 
 		<commands>
@@ -48,19 +57,21 @@ Set @XmlContent=N'
 		</command>
 	</commands>
 	<form-items>
-		<control name="tdbcDivisionID" type="combo" dataset="Divisions" event="SelectedIndexChanged" required="true"/>
-
-		<control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
-		<control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
-
-		<control name="txbRDVoucherDateFrom" type="DateEdit" require="true"></control>
-		<control name="txbRDVoucherDateTo" type="DateEdit" require="true"></control>
-
-		<control name="txbAsOfRDVoucherDate" type="DateEdit" require="true"></control>
-
-		<control name="btnFilter" type ="button" event="Click" command ="cmdFilter" hotKey="F5" isAutoClick = "true"/>
-		<control name="mnuPrint" event="Click" command ="cmdPrint"/>
-		<control name="tdbg" type ="grid"/>
+	    <control name="tdbcDivisionID" type="combo" dataset="Divisions" event="SelectedIndexChanged" required="true"/>
+	
+	    <control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+	    <control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
+	
+	    <control name="tdbcStatusSO" type="combo" dataset="StatusSO" dataDependent="tdbcDivisionID"/>
+	
+	    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
+	    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
+	
+	    <control name="txbDeliveryDateFrom" type="DateEdit"/>
+	    <control name="txbDeliveryDateTo" type="DateEdit"/>
+	
+	    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5"/>
+	    <control name="tdbgGrid" type="grid"/>
 	</form-items>
 </form>
 '
@@ -179,7 +190,21 @@ Set @XAMLContent=N'
 		<Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
         <dxg:PrintTextEdit x:Name="txbVoucherNo" EditValue="VoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" 
 		Width="120" Grid.Column="6" Grid.Row="1" />
-       
+
+	 
+        <Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="0" Grid.Column="5" Margin="0,10,0,0" Height="20" />
+
+		<dxe:LookUpEdit x:Name="tdbcStatusSO"
+		                Grid.Row="0"
+		                Grid.Column="6"
+		                Width="120"
+		                Height="22"
+		                Margin="0,10,0,0"
+		                DisplayMember="IDName"
+		                ValueMember="IDKey"
+		                AutoPopulateColumns="False"
+		                PopupWidth="250"
+		                ImmediatePopup="True" />
 
 
 		<!--Begin Button Loc-->
