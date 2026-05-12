@@ -24,7 +24,7 @@ Set @XmlContent=N'
 	
 		<variable name="vDeliveryDate" control="txbDeliveryDate" dataType="date" binding="" />
 			
-	    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="ID" />
+	    <variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="IDKey" />
 	</variables>
 
 	<datasets>
@@ -35,7 +35,7 @@ Set @XmlContent=N'
 	        queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear FROM D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC" />
 	
 	    <dataset name="StatusSO"
-	        queryText="EXEC D05P0007 ''Status_D05F1621'', value[''vDivisionID''], value[''pUserID''], value[''pLanguage''], value[''pCodeTable''], '''', 4" />
+	        queryText="CREATE TABLE #StatusSO(IDKey VARCHAR)EXEC D05P0007 ''Status_D05F1621'', value[''vDivisionID''], value[''pUserID''], value[''pLanguage''], value[''pCodeTable''], '''', 4" />
 	
 	    <dataset name="dsCreateCol"
 	        queryText="EXEC Z_Q00713_D05P0707 
@@ -202,11 +202,14 @@ Set @XAMLContent=N'
 		                Width="120"
 		                Height="22"
 		                Margin="0,10,0,0"
-		                DisplayMember="Name"
-		                ValueMember="ID"
-		                AutoPopulateColumns="True"
+		                DisplayMember="IDName"
+		                ValueMember="IDKey"
+		                AutoPopulateColumns="False"
 		                PopupWidth="280"
-		                ImmediatePopup="True"/>
+		                ImmediatePopup="True"
+						IsTextEditable="False"
+						AllowNullInput="True"
+						NullText=""/>
 
 		<!--Begin Button Loc-->
 		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
@@ -259,4 +262,3 @@ END
 select *from LEMONSYS..D00T0147 where PerrmissionSreenID = N'Z_Q00713_D05F0707'
 
 select *from LEMONSYS..D00T0140 where ModuleID=N'D31' and ScreenNameVietNameseU=N'Lệnh sản xuất'
-
