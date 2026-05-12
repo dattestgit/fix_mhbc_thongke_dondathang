@@ -34,8 +34,8 @@ Set @XmlContent=N'
 	    <dataset name="Periods"
 	        queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear FROM D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC" />
 	
-	    <dataset name="StatusSO"
-	        queryText="CREATE TABLE #StatusSO(IDKey VARCHAR)EXEC D05P0007 ''Status_D05F1621'', value[''vDivisionID''], value[''pUserID''], value[''pLanguage''], value[''pCodeTable''], '''', 4" />
+		<dataset name="StatusSO"
+		    queryText="EXEC D05P0007 ''Status_D05F1621'', value[''vDivisionID''], value[''pUserID''], value[''pLanguage''], value[''pCodeTable''], '''', 4" />
 	
 	    <dataset name="dsCreateCol"
 	        queryText="EXEC Z_Q00713_D05P0707 
@@ -199,17 +199,17 @@ Set @XAMLContent=N'
 		<dxg:LookUpEdit x:Name="tdbcStatusSO"
 		                Grid.Row="0"
 		                Grid.Column="6"
-		                Width="120"
+		                Width="180"
 		                Height="22"
 		                Margin="0,10,0,0"
 		                DisplayMember="IDName"
 		                ValueMember="IDKey"
-		                AutoPopulateColumns="False"
-		                PopupWidth="280"
+		                AutoPopulateColumns="True"
+		                PopupWidth="320"
 		                ImmediatePopup="True"
-						IsTextEditable="False"
-						AllowNullInput="True"
-						NullText=""/>
+		                IsTextEditable="False"
+		                AllowNullInput="True"
+		                NullText="" />
 
 		<!--Begin Button Loc-->
 		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
