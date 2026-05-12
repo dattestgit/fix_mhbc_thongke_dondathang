@@ -1,0 +1,444 @@
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+-- <Summary>  
+---- Z_Q00713_D30F0706  
+-- <Param>  
+----   
+-- <Return>  
+----   
+-- <Reference>  
+---- D07 \ Thong ke phan tich \ *Thong ke hang hoa can het han - Z_Q00713_D30F0706 (Duoc Ben Tre)  
+-- <History>  
+---- Create on 30/09/2022 by TRITHONG(ID245729)  
+----   
+---- Modified on 30/09/2022 by TRITHONG(ID245729)  
+-- <Example>  
+---- LoadLocationNo: EXEC Z_B00107_D07P3021  N'%', 1, N'10/2022', N'10/2022', 0, '09/29/2022', '09/29/2022', N'(''%'')', N'(''DUNGLO002'';''DUNGLO001'')', N'%', N'(''%'')', N'(''%'')', N'%', '09/29/2022', 'LEMONADMIN', 'F51DCST0231', 1, '84', 0, 'LoadLoca
+tionNo'   
+---- LoadTimelineExpDate: EXEC Z_B00107_D07P3021  N'%', 1, N'10/2022', N'10/2022', 0, '09/29/2022', '09/29/2022', N'(''%'')', N'(''%'')', N'', N'()', N'(''%'')', N'', '09/29/2022', 'LEMONADMIN', 'F51DCST0231', 1, '84', 0, 'LoadTimelineExpDate'   
+---- Generate Column: EXEC Z_B00107_D07P3021  N'%', 1, N'01/2022',N'08/2022', 0, '09/05/2022', '09/05/2022', 0, '09/05/2022', '09/05/2022', '09/05/2022', 1, 0, N'KH', N'(''CCT134'')', N'(''HK0078'')', N'%', N'(''%'')', 'LEMONADMIN', 'F51DCST0231', 1, '84'
+, 0   
+---- Query data: EXEC Z_B00107_D07P3021  N'%', 1, N'10/2022', N'10/2022', 0, '09/29/2022', '09/29/2022', N'(''%'')', N'(''DUNGLO001'';''DUNGLO002'')', N'%', N'(''%'')', N'(''%'';''DUNGLO003-0822-001'';''DUNGLO001-0722-001'';''DUNGLO002-0722-001'')', N'%',
+ '09/29/2022', 'LEMONADMIN', 'F51DCST0231', 1, '84',1, 'LoadData'   
+----  
+CREATE PROCEDURE Z_Q00713_D30P0708  
+(   
+ @DivisionID    VARCHAR(50) = '',  
+ @IsPeriod    TINYINT = 0,  
+ @PeriodFrom    VARCHAR(50) = '',  
+ @PeriodTo    VARCHAR(50) = '',  
+ @IsRDVoucherDate  TINYINT = 0, ---- Cho phep loc theo ngay ph  
+ @DateRDVoucherDateFrom DATETIME = '',  ---- Ngay hop dong tu  
+ @DateRDVoucherDateTo DATETIME = '', ---- Ngay hop dong Den  
+ @Mode     TINYINT = 0 ,  
+ @VoucherNo    VARCHAR(Max) = '',  
+ @Status     VARCHAR(Max) = '',  
+ @IsDLDate  TINYINT = 0,  
+ @DateDLDateFrom DATETIME = '',  ----  
+ @DateDLDateTo DATETIME = '' ----  
+)   
+AS   
+SET NOCOUNT ON  
+  
+DECLARE  @SQLGenCol00 NVARCHAR(4000),  
+   @SQLGenCol01 NVARCHAR(MAX),  
+   @SQLGenCol02 NVARCHAR(4000),  
+   @SQLGenCol03 NVARCHAR(4000),  
+   @SQLGenCol04 NVARCHAR(4000),  
+   @SQLCreTble NVARCHAR(4000),  
+   @SQL00 NVARCHAR(4000),  
+   @SQL01 NVARCHAR(4000),  
+   @SQL02 NVARCHAR(4000),    
+   @SQL03 NVARCHAR(4000),  
+   @SQL04 NVARCHAR(4000),  
+   @SQL05 NVARCHAR(4000),  
+   @SQL06 NVARCHAR(MAX),  
+   @SQL07 NVARCHAR(MAX),  
+   @SQL08 NVARCHAR(MAX),  
+   @SQL09 NVARCHAR(MAX),  
+   @SQL10 NVARCHAR(MAX),  
+   @U  VARCHAR(1),  
+   @FromMonth  TINYINT,  
+   @FromYear  INT,  
+   @ToMonth  TINYINT,  
+   @ToYear   INT  
+DECLARE @D90_ConvertedDecimals TINYINT, @D07_QuantityDecimals TINYINT, @D07_UnitCostDecimals TINYINT,   
+  @UnitPriceDecimal AS TINYINT,  
+  @OriginalDecimal TINYINT,  
+  @ConvertedDecimal TINYINT  
+SELECT @D90_ConvertedDecimals = D90_ConvertedDecimals,  
+  @D07_QuantityDecimals = D07_QuantityDecimals,  
+  @D07_UnitCostDecimals = D07_UnitCostDecimals  
+FROM D91T0025 WITH(NOLOCK)  
+SELECT @UnitPriceDecimal = UnitPriceDecimals,  
+  @OriginalDecimal = OriginalDecimal,  
+  @ConvertedDecimal = ConvertedDecimal  
+FROM D91V0010 WHERE CurrencyID = 'VND'  
+SET @SQLGenCol00= N''  
+SET @SQLGenCol01= N''  
+SET @SQLGenCol02= N''  
+SET @SQLGenCol03= N''  
+SET @SQLGenCol04 =N''  
+SET @SQLCreTble = N''  
+SET @SQL00  = N''  
+SET @SQL01  = N''  
+SET @SQL02  = N''  
+SET @SQL03  = N''  
+SET @SQL04  = N''  
+SET @SQL05  = N''  
+SET @SQL06  = N''  
+SET @SQL07  = N''  
+SET @SQL08  = N''  
+SET @SQL09  = N''  
+SET @SQL10  = N''  
+SET @FromMonth = LEFT(@PeriodFrom,2)  
+SET @FromYear = RIGHT(@PeriodFrom,4)  
+SET @ToMonth = LEFT(@PeriodTo,2)  
+SET @ToYear  = RIGHT(@PeriodTo,4)  
+  
+DECLARE @DirectorName AS NVARCHAR(1000)  
+DECLARE @ChiefAccountantName AS NVARCHAR(1000)  
+DECLARE @DivisionName AS NVARCHAR(1000)  
+  
+DECLARE  @PeriodField VARCHAR(2000),  
+   @FromPeriod  VARCHAR(2000),  
+   @ToPeriod VARCHAR(2000)  
+  
+SELECT  @PeriodField = CASE WHEN @IsPeriod = 1 THEN 'TranMonth+TranYear*100' ELSE 'RDVoucherDate' END,  
+  @FromPeriod = CASE WHEN @IsPeriod = 1 THEN LTRIM(RTRIM(STR(@FromMonth+@FromYear*100))) ELSE ''''+CONVERT(VARCHAR(10), @DateRDVoucherDateFrom, 101)+'''' END,  
+  @ToPeriod = CASE WHEN @IsPeriod = 1 then LTRIM(RTRIM(STR(@ToMonth+@ToYear*100))) ELSE ''''+CONVERT(VARCHAR(10), @DateRDVoucherDateTo, 101)+'''' END  
+  
+IF @Mode = 0  
+BEGIN  
+  SET @SQLGenCol00 = N'  
+  CREATE TABLE #StructTable  
+  (  
+     Level   TINYINT,   
+     ParentNodeID  VARCHAR(50),  
+     CaptionID  VARCHAR(50),  
+     CaptionName  NVARCHAR(500),  
+     FieldName  VARCHAR(50),  
+     ColMergeNum  TINYINT,   
+     RowMergeNum  TINYINT,  
+     ColID   TINYINT,  
+     IsLocked   TINYINT,  
+     DataFormat  VARCHAR(50),  
+     Length   INT,  
+     DataType   VARCHAR(50),  
+     ControlType  VARCHAR(50),  
+     DisplayOrder  INT IDENTITY(1, 1),  
+     Expression  VARCHAR(1000),  
+     DefaultValues VARCHAR(1000),  
+     SumFooter  VARCHAR(50),  
+     IsHide   TINYINT DEFAULT(0),  
+     DatatypeServer VARCHAR(50),  
+     Fix    NVARCHAR(50)  ---Fix cung cot ''L''  
+  )  
+    
+  
+ '  
+  SET @SQLGenCol01 = CAST('' AS NVARCHAR(MAX)) + N'  
+  INSERT INTO #StructTable (Level, ParentNodeID, CaptionID, CaptionName, FieldName, ColMergeNum, RowMergeNum, ColID, DataType, Length, IsLocked, SumFooter, DatatypeServer, DataFormat, IsHide, Fix)   
+  VALUES   
+  (0, '''', ''Group'', N''Nhóm'', ''Group'', 1, 2 , NULL, ''S'', 160, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''OrderNum'', N''STT'', ''OrderNum'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''VoucherNo'', N''Đơn hàng'', ''VoucherNo'', 1, 2 , NULL, ''S'', 110, NULL, '''', ''NVARCHAR(250)'', NULL, 0,''''),  
+  (0, '''', ''VoucherDate'', N''Ngày nhận'', ''VoucherDate'', 1, 2 , NULL, ''S'', 90, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''Deliverydate'', N''Ngày giao'', ''Deliverydate'', 1, 2 , NULL, ''S'', 90, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''ObjectID'', N''Mã khách hàng'', ''ObjectID'', 1, 2 , NULL, ''S'', 150, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''ObjectName'', N''khách hàng'', ''ObjectName'', 1, 2 , NULL, ''S'', 350, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''InventoryName'', N''Tên hàng'', ''InventoryName'', 1, 2 , NULL, ''S'', 250, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''specifications1'', N''Dài'', ''specifications1'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''specifications2'', N''Rộng'', ''specifications2'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''specifications3'', N''Cao'', ''specifications3'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''Quantity'', N''Số lượng'', ''Quantity'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''String02'', N''Khổ K'', ''String02'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''String02_1'', N''Khổ D'', ''String02_1'', 1, 2 , NULL, ''S'', 80, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''String03'', N''Kết cấu'', ''String03'', 1, 2 , NULL, ''S'',180, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''String01'', N''Sóng'', ''String01'', 1, 2 , NULL, ''S'', 50, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''Machine'', N''Máy In'', ''Machine'', 1, 2 , NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''MachineB'', N''Máy Bế'', ''MachineB'', 1, 2 , NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''MachinePE'', N''Cán PE'', ''MachinePE'', 1, 2 , NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''MachineKPE'', N''Khổ PE'', ''MachineKPE'', 1, 2 , NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0,''''),  
+  (0, '''', ''MachineDAN'', N''Ðóng/ Dán'', ''MachineDAN'', 1, 2 , NULL, ''S'', 70, NULL, '''', ''NVARCHAR(500)'', NULL, 0,'''')  
+  
+    
+  
+  
+  SELECT  *  
+  FROM  #StructTable  
+  ORDER BY DisplayOrder  
+  
+  DROP TABLE #StructTable  
+  '  
+   
+   
+ PRINT @SQLGenCol00  
+ PRINT @SQLGenCol01  
+ PRINT @SQLGenCol02  
+ PRINT @SQLGenCol03  
+ PRINT @SQLGenCol04  
+ --SELECT LEN(@SQLGenCol00)  
+ --SELECT LEN(@SQLGenCol01)  
+ --SELECT LEN(@SQLGenCol02)  
+ --SELECT LEN(@SQLGenCol03)  
+ --SELECT LEN(@SQLGenCol04)  
+  
+ EXEC(@SQLGenCol00 + @SQLGenCol01 + @SQLGenCol02 + @SQLGenCol03 + @SQLGenCol04)  
+ RETURN  
+END  
+  
+IF @Mode = 1   
+BEGIN  
+ CREATE TABLE #Result(  
+ OrderNoGroup    NVARCHAR(500)  
+ ,OrderNo    NVARCHAR(500)  
+ ,VoucherNo   NVARCHAR(250)  
+ ,[Group]    NVARCHAR(250)   
+ ,VoucherDate   NVARCHAR(500)  
+ ,Deliverydate  NVARCHAR(500)  
+ ,ObjectID   NVARCHAR(500)  
+ ,ObjectName   NVARCHAR(500)  
+ ,InventoryName  NVARCHAR(500)  
+ ,specifications1  NVARCHAR(500)  
+ ,specifications2  NVARCHAR(500)  
+ ,specifications3  NVARCHAR(500)  
+ ,Quantity   DECIMAL(28,8)  
+ ,String02   NVARCHAR(500)  
+ ,String02_1   DECIMAL(28,2)  
+ ,String03   NVARCHAR(500)  
+ ,String01   NVARCHAR(500)  
+ ,Machine    NVARCHAR(500)  
+ ,MachineB   NVARCHAR(500)  
+ ,MachinePE   NVARCHAR(500)  
+ ,MachineKPE   NVARCHAR(500)  
+ ,MachineDAN   NVARCHAR(500)  
+ ,Spec01ID   NVARCHAR(500)  
+ )  
+ DECLARE @I VARCHAR(500), @LookupID VARCHAR(500),@LookupName NVARCHAR(500)  
+  
+ SELECT *  INTO #D91T0320 FROM D91T0320 WITH(NOLOCK) WHERE LookupType ='D32_MachineType'   
+  
+WHILE EXISTS(SELECT TOP 1 1 FROM #D91T0320 WITH(NOLOCK))  
+BEGIN   
+ SELECT TOP 1 @I = DisplayOrder,@LookupID = LookupID,@LookupName = DescriptionU FROM #D91T0320 WITH(NOLOCK) ORDER BY DisplayOrder desc  
+   
+ SET @SQL00 = N'  
+    
+  INSERT INTO #Result(  
+  OrderNoGroup,  
+  OrderNo  
+  ,[Group]  
+  ,VoucherNo  
+  ,VoucherDate  
+  ,Deliverydate  
+  ,ObjectID  
+  ,ObjectName  
+  ,InventoryName  
+  ,specifications1  
+  ,specifications2  
+  ,specifications3  
+  ,Quantity  
+  ,Spec01ID  
+  ,String02  
+  ,String02_1  
+  ,String03  
+  ,String01  
+  ,Machine  
+  ,MachineB  
+  ,MachinePE  
+  ,MachineKPE  
+  ,MachineDAN  
+  
+  )  
+  SELECT   
+  '''+@I+N''' OrderNoGroup,  
+  ''0'' AS OrderNo  
+  ,N'''+@LookupName+N''' [Group]  
+  ,'''' VoucherNo  
+  ,NULL VoucherDate  
+  ,NULL Deliverydate  
+  ,'''' ObjectID  
+  ,'''' ObjectName  
+  ,'''' InventoryName  
+  ,'''' specifications1  
+  ,'''' specifications2  
+  ,'''' specifications3  
+  ,0   AS Quantity  
+  ,'''' Spec01ID  
+  ,'''' String02  
+  ,NULL  String02_1  
+  ,'''' String03  
+  ,'''' String01  
+  ,'''' Machine  
+  ,'''' MachineB  
+  ,'''' MachinePE  
+  ,'''' MachineKPE  
+  ,'''' MachineDAN  
+    
+  INSERT INTO #Result(  
+  OrderNoGroup,  
+  OrderNo  
+  ,[Group]  
+  ,VoucherNo  
+  ,VoucherDate  
+  ,Deliverydate  
+  ,ObjectID  
+  ,ObjectName  
+  ,InventoryName  
+  ,specifications1  
+  ,specifications2  
+  ,specifications3  
+  ,Quantity  
+  ,Spec01ID  
+  ,String02  
+  ,String02_1  
+  ,String03  
+  ,String01  
+  ,Machine  
+  ,MachineB  
+  ,MachinePE  
+  ,MachineKPE  
+  ,MachineDAN  
+  
+  )  
+  '  
+  SET @SQL01 =   
+  N'  
+  SELECT   
+  '''+@I+N''' OrderNoGroup,  
+  ltrim(rtrim(str(row_number( )over(order by VoucherNum)))) DisplayOrder  
+  ,''''  as [Group]  
+  ,T1.VoucherNum as VoucherNo  
+  ,CONVERT(varchar,T1.VoucherDate,103) as VoucherDate  
+  ,CONVERT(varchar,T2.DeliveryDate,103) as Deliverydate  
+  ,CustomerID as ObjectID  
+  ,CONVERT(Nvarchar(500),Ob.ObjectNameU) as ObjectName  
+  ,CONVERT(nvarchar,InventoryName) as InventoryName  
+  , CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = - 1 THEN '''' ELSE  CONVERT(nvarchar,LEFT(T2.Spec01ID, CHARINDEX(''X'', T2.Spec01ID) - 1)) END as specifications1  
+    , CONVERT(nvarchar,'''') as specifications2  
+    ,CASE WHEN CHARINDEX(''X'', T2.Spec01ID) - 1 = -1 THEN '''' ELSE CONVERT(nvarchar,right(T2.Spec01ID, CHARINDEX(''X'', REVERSE(T2.Spec01ID)) - 1)) END as specifications3  
+  ,T2.CQuantity as Quantity  
+  ,T2.Spec01ID  
+  ,CONVERT(Nvarchar(500),'''') as String02  
+  ,CONVERT(DECIMAL(28,2),0) as String02_1  
+  ,T2.[DRef4U] as String03  
+  ,T2.[DRef5U] as String01  
+  ,T34.Descriptionu as Machine  
+  ,T34_1.Descriptionu as MachineB  
+  ,T34_2.Descriptionu as MachinePE  
+  ,CONVERT(Nvarchar(500),'''') as MachineKPE  
+  ,T34_3.Descriptionu as  MachineDAN  
+  FROM D05T0016 T1  
+    INNER JOIN D05T0017  T2 WITH(NOLOCK) ON T1.QuotationID = T2.QuotationID  
+    INNER JOIN D07T0002  T3 WITH(NOLOCK) ON T2.InventoryID = T3.InventoryID  
+    INNER JOIN D31T2310  T4 WITH(NOLOCK) ON T2.QuotationID = T4.SalesOrderID AND T2.QuotationItemID = T4.SalesOrderItemID  
+    LEFT JOIN Object  Ob WITH(NOLOCK) ON T1.CustomerID = Ob.ObjectID AND Ob.ObjectTypeID = T1.ObjectTypeID  
+    LEFT JOIN D07T0034 T34 WITH(NOLOCK) ON  T3.ICode14ID = T34.ICodeID  AND T34.TypeCodeID = ''14''  
+    LEFT JOIN D07T0034 T34_1 WITH(NOLOCK) ON  T3.ICode15ID = T34_1.ICodeID AND T34_1.TypeCodeID = ''15''  
+    LEFT JOIN D07T0034 T34_2 WITH(NOLOCK) ON  T3.ICode13ID = T34_2.ICodeID AND T34_2.TypeCodeID = ''13''  
+    LEFT JOIN D07T0034 T34_3 WITH(NOLOCK) ON  T3.ICode16ID = T34_3.ICodeID AND T34_3.TypeCodeID = ''16''  
+  
+    WHERE 1 = 1   
+    '+CASE WHEN @IsPeriod = 1 THEN 'AND ( T1.Tranmonth+Tranyear*100) BETWEEN '+@FromPeriod+' AND '+@ToPeriod+' '  ELSE '' END +'  
+    '+CASE WHEN @IsRDVoucherDate = 1 THEN 'AND format(VoucherDate,''MM/dd/yyyy'') BETWEEN '''+FORMAT(@DateRDVoucherDateFrom,'MM/dd/yyyy')+''' AND '''+FORMAT(@DateRDVoucherDateTo,'MM/dd/yyyy')+''' '  ELSE '' END +'  
+    '+CASE WHEN @IsDLDate = 1 THEN 'AND format(DeliveryDate,''MM/dd/yyyy'') BETWEEN '''+FORMAT(@DateDLDateFrom,'MM/dd/yyyy')+''' AND '''+FORMAT(@DateDLDateTo,'MM/dd/yyyy')+''' '  ELSE '' END +'  
+    '+CASE WHEN @VoucherNo = '' THEN '' ELSE 'AND T1.VoucherNum = '''+@VoucherNo+''' ' END+'  
+    '+CASE WHEN @Status = '' THEN '' ELSE 'AND T1.Astatus = '''+@Status+''' ' END+'  
+    AND T1.ProfessionKind = ''O''  
+    '+CASE WHEN @LookupID = 'PE' THEN'   
+    AND ISNULL(T3.ICode13ID,'''') <> '''' '  
+  
+    WHEN @LookupID = '2' THEN '  
+    AND (ISNULL(T3.ICode14ID,'''') =''0''  
+    OR ISNULL(T3.ICode14ID,'''') ='''+@LookupID+''')  
+    '  
+    WHEN @LookupID = 'CAT' THEN '  
+    AND ISNULL(T3.ICode15ID,'''') <>''''  
+    '  
+    ELSE '  
+    AND (ISNULL(T3.ICode14ID,'''') = '''+@LookupID+'''  
+    OR   
+     ISNULL(T3.ICode15ID,'''') = '''+@LookupID+'''  
+    )  
+    ' END+'  
+  
+  UPDATE #Result   
+  SET specifications2 = CASE WHEN CHARINDEX(''X'', [Spec01ID]) - 1 = -1 THEN '''' ELSE CONVERT(nvarchar,SUBSTRING([Spec01ID], CHARINDEX(''X'', [Spec01ID]) + 1,  CHARINDEX(''X'', [Spec01ID], CHARINDEX(''X'',   
+  [Spec01ID]) + 1) - CHARINDEX(''X'', [Spec01ID]) - 1 )) END  
+  WHERE  LEN(Spec01ID)  - LEN(REPLACE(Spec01ID, ''x'', ''''))  = 2  
+  AND OrderNoGroup = '''+@I+'''  
+  
+  UPDATE #Result    
+  SET MachineKPE = CAST (specifications2 AS DECIMAL(28,2))  + CAST (specifications3 AS DECIMAL(28,2)) - 1,String02_1 = (CAST (specifications1 AS DECIMAL(28,2))  + CAST (specifications2 AS DECIMAL(28,3))*2 ) + 4  
+  ,String02 = CAST (specifications2 AS DECIMAL(28,2))  + CAST (specifications3 AS DECIMAL(28,2))  
+  WHERE OrderNoGroup = '''+@I+''' AND ISNULL(specifications2,'''') <> ''''  
+    
+    
+  
+  
+  
+  UPDATE #Result   
+  SET Quantity  = (SELECT  SUM(Quantity) FROM #Result WHERE OrderNoGroup = '''+@I+'''   GROUP BY OrderNoGroup)  
+  WHERE OrderNoGroup = '''+@I+''' AND OrderNo = ''0''  
+  
+ '  
+ PRINT @SQL00  
+ PRINT @SQL01  
+ EXEC( @SQL00+@SQL01)  
+ DELETE #D91T0320 WHERE  LookupID = @LookupID  
+  
+ END   
+  
+ SET @SQL02 = N'  
+ SELECT OrderNoGroup,  
+   OrderNo  
+  ,CASE WHEN OrderNo = 0  THEN '''' ELSE OrderNo END OrderNum  
+  ,[Group]  
+  ,VoucherNo  
+  ,VoucherDate  
+  ,Deliverydate  
+  ,ObjectID  
+  ,ObjectName  
+  ,InventoryName  
+  ,specifications1  
+  ,specifications2  
+  ,specifications3  
+  ,FORMAT(Quantity,''N0'') AS Quantity  
+  ,Spec01ID  
+  ,String02  
+  ,String02_1  
+  ,String03  
+  ,String01  
+  ,Machine  
+  ,MachineB  
+  ,MachinePE  
+  ,MachineKPE  
+  ,MachineDAN  
+  ,CASE WHEN RIGHT(OrderNo,1) = ''0'' THEN ''(B)''  ELSE '''' END AS Orderlevel  FROM  #Result WITH(NOLOCK) ORDER BY OrderNoGroup,OrderNo  
+   
+ '  
+  
+  
+ EXEC( @SQL02)  
+ END  
+  
+   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
