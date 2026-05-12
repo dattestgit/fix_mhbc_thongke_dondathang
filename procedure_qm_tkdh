@@ -11,12 +11,30 @@ ALTER PROCEDURE Z_Q00713_D05P0707
     @Mode                    TINYINT      = 0,
     @VoucherNo               VARCHAR(MAX) = '',
 
-    @DeliveryDate            DATETIME     = NULL,
+	@DeliveryDateFrom        DATETIME     = NULL,
+	@DeliveryDateTo          DATETIME     = NULL,
     @StatusSO                VARCHAR(50)  = '%'
 )
 AS
 SET NOCOUNT ON
 
+IF @DeliveryDateFrom IS NOT NULL 
+   AND CONVERT(VARCHAR(8), @DeliveryDateFrom, 112) = '19000101'
+BEGIN
+    SET @DeliveryDateFrom = NULL
+END
+
+IF @DeliveryDateTo IS NOT NULL 
+   AND CONVERT(VARCHAR(8), @DeliveryDateTo, 112) = '19000101'
+BEGIN
+    SET @DeliveryDateTo = NULL
+END
+
+
+IF ISNULL(@StatusSO, '') = ''
+BEGIN
+    SET @StatusSO = '%'
+END
 DECLARE
     @SQLGenCol00 NVARCHAR(4000),
     @SQLGenCol01 NVARCHAR(4000),
@@ -126,9 +144,9 @@ BEGIN
     (0, '''', ''LengthValue'',   N''Dài'',              ''LengthValue'',   1, 2, NULL, ''S'',  80, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
     (0, '''', ''WidthValue'',    N''Rộng'',             ''WidthValue'',    1, 2, NULL, ''S'',  80, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
     (0, '''', ''HeightValue'',   N''Cao'',              ''HeightValue'',   1, 2, NULL, ''S'',  80, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
-    (0, '''', ''Quantity'',      N''Số lượng'',         ''Quantity'',      1, 2, NULL, ''N'',  90, NULL, '''', ''DECIMAL(28,8)'', NULL, 0, ''''),
-    (0, '''', ''KhoK'',          N''Khổ K'',            ''KhoK'',          1, 2, NULL, ''S'',  90, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
-    (0, '''', ''KhoD'',          N''Khổ D'',            ''KhoD'',          1, 2, NULL, ''S'',  90, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
+	(0, '''', ''Quantity'',		 N''Số lượng'', 		''Quantity'', 	   1, 2, NULL, ''N'',  90, NULL, '''', ''DECIMAL(28,0)'', ''#,##0'', 0, ''''),
+	(0, '''', ''KhoK'',     	 N''Khổ K'',    		''KhoK'',          1, 2, NULL, ''N'',  90, NULL, '''', ''DECIMAL(18,2)'', ''#,##0.00'', 0, ''''),
+	(0, '''', ''KhoD'',     	 N''Khổ D'',    		''KhoD'',          1, 2, NULL, ''N'',  90, NULL, '''', ''DECIMAL(18,2)'', ''#,##0.00'', 0, ''''),
     (0, '''', ''StructureID'',   N''Kết cấu'',          ''StructureID'',   1, 2, NULL, ''S'', 250, NULL, '''', ''NVARCHAR(500)'', NULL, 0, ''''),
     (0, '''', ''WaveID'',        N''Sóng'',             ''WaveID'',        1, 2, NULL, ''S'', 100, NULL, '''', ''NVARCHAR(500)'', NULL, 0, '''')
 
@@ -161,9 +179,9 @@ BEGIN
         CONVERT(NVARCHAR(500), '''') AS LengthValue,
         CONVERT(NVARCHAR(500), '''') AS WidthValue,
         CONVERT(NVARCHAR(500), '''') AS HeightValue,
-        CONVERT(DECIMAL(28, 8), ISNULL(NULLIF(T2.CQuantity, 0), ISNULL(T2.Quantity, 0))) AS Quantity,
-        CONVERT(NVARCHAR(500), '''') AS KhoK,
-        CONVERT(NVARCHAR(500), '''') AS KhoD,
+		CONVERT(DECIMAL(28,0), ROUND(ISNULL(NULLIF(T2.CQuantity, 0), ISNULL(T2.Quantity, 0)), 0)) AS Quantity,
+		CONVERT(DECIMAL(18,2), NULL) AS KhoK,
+		CONVERT(DECIMAL(18,2), NULL) AS KhoD,
         ISNULL(T2.DRef4U, '''') AS StructureID,
         ISNULL(T2.DRef5U, '''') AS WaveID,
         STS.StatusSO AS StatusSO
@@ -182,7 +200,8 @@ BEGIN
       ' + CASE WHEN ISNULL(@IsPeriod, 0) = 1 AND ISNULL(@FromPeriod, '') <> '' AND ISNULL(@ToPeriod, '') <> '' THEN ' AND (T1.TranMonth + T1.TranYear * 100) BETWEEN ' + @FromPeriod + ' AND ' + @ToPeriod + ' ' ELSE '' END + '
       ' + CASE WHEN ISNULL(@IsRDVoucherDate, 0) = 1 AND @DateRDVoucherDateFrom IS NOT NULL AND @DateRDVoucherDateTo IS NOT NULL THEN ' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateFrom, 112) + ''' AND ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateTo, 112) + ''' ' ELSE '' END + '
       ' + CASE WHEN ISNULL(@VoucherNo, '') = '' THEN '' ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' ' END + '
-      ' + CASE WHEN @DeliveryDate IS NULL THEN '' ELSE ' AND T2.DeliveryDate >= ''' + CONVERT(VARCHAR(8), @DeliveryDate, 112) + ''' AND T2.DeliveryDate < ''' + CONVERT(VARCHAR(8), DATEADD(DAY, 1, @DeliveryDate), 112) + ''' ' END + '
+      ' + CASE WHEN @DeliveryDateFrom IS NULL THEN '' ELSE ' AND T2.DeliveryDate >= ''' + CONVERT(VARCHAR(8), @DeliveryDateFrom, 112) + ''' ' END + '
+	  ' + CASE WHEN @DeliveryDateTo IS NULL THEN '' ELSE ' AND T2.DeliveryDate < ''' + CONVERT(VARCHAR(8), DATEADD(DAY, 1, @DeliveryDateTo), 112)+ ''' ' END + '
       ' + CASE WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN '' ELSE ' AND STS.StatusSO = ''' + REPLACE(@StatusSO, '''', '''''') + ''' ' END + '
     '
 
@@ -197,8 +216,8 @@ BEGIN
     SET @SQL03 = N'
     UPDATE #D05T0016_1
     SET
-        KhoK =  CASE WHEN ISNUMERIC (WidthValue) = 1 AND ISNUMERIC (HeightValue) = 1 THEN CONVERT(NVARCHAR(500), CONVERT(DECIMAL(28, 8), WidthValue) + CONVERT(DECIMAL(28, 8), HeightValue) ) ELSE '''' END,
-        KhoD = CASE WHEN ISNUMERIC(LengthValue) = 1 AND ISNUMERIC (WidthValue) = 1 THEN CONVERT(NVARCHAR(500), (CONVERT(DECIMAL(28, 8), LengthValue) + CONVERT(DECIMAL(28, 8), WidthValue) ) * 2 + 4 ) ELSE '''' END
+        KhoK = CASE WHEN ISNUMERIC(WidthValue) = 1 AND ISNUMERIC(HeightValue) = 1 THEN CONVERT(DECIMAL(18,2), CONVERT(DECIMAL(18,4), WidthValue) + CONVERT(DECIMAL(18,4), HeightValue)) ELSE NULL END,
+        KhoD = CASE WHEN ISNUMERIC(LengthValue) = 1 AND ISNUMERIC(WidthValue) = 1 THEN CONVERT(DECIMAL(18,2), (CONVERT(DECIMAL(18,4), LengthValue) + CONVERT(DECIMAL(18,4), WidthValue)) * 2 + 4) ELSE NULL END
     '
     SET @SQL04 = N'
     SELECT
@@ -212,9 +231,9 @@ BEGIN
         LengthValue,
         WidthValue,
         HeightValue,
-        Quantity,
-        KhoK,
-        KhoD,
+	    CONVERT(DECIMAL(28,0), Quantity) AS Quantity,
+	    CONVERT(DECIMAL(18,2), KhoK) AS KhoK,
+	    CONVERT(DECIMAL(18,2), KhoD) AS KhoD,
         StructureID,
         WaveID
     FROM #D05T0016_1
@@ -229,11 +248,7 @@ BEGIN
     --PRINT @SQL03
     --PRINT @SQL04
 
-    EXEC
-    (
-        @SQL00 + @SQL01 + @SQL02 + @SQL03 + @SQL04
-        + @SQL05 + @SQL06 + @SQL07 + @SQL08 + @SQL09 + @SQL10
-    )
+    EXEC ( @SQL00 + @SQL01 + @SQL02 + @SQL03 + @SQL04+ @SQL05 + @SQL06 + @SQL07 + @SQL08 + @SQL09 + @SQL10 )
 
     RETURN
 END
