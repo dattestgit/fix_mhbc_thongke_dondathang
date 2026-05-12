@@ -187,7 +187,6 @@ Set @XAMLContent=N'
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
-	 		<RowDefinition Height="40" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -224,8 +223,8 @@ Set @XAMLContent=N'
 		Width="120" Grid.Column="6" Grid.Row="1" />
 	 
 
-		<Label x:Name="lblDeliveryDate" Content="Ngày giao" Grid.Row="3" Grid.Column="0" Margin="0,10,0,0" Height="20" />
-		<dxe:DateEdit x:Name="txbDeliveryDate" Grid.Row="3" Grid.Column="1" Width="120" Height="22" Margin="0,10,0,0" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
+		<Label x:Name="lblDeliveryDate" Content="Ngày giao" Grid.Row="2" Grid.Column="5" Margin="0,10,0,0" Height="20" />
+		<dxe:DateEdit x:Name="txbDeliveryDate" Grid.Row="2" Grid.Column="6" Width="120" Height="22" Margin="0,10,0,0" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
 
 	 
 	 	<Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="0" Grid.Column="5" Margin="0,10,0,0" Height="20" />
@@ -243,6 +242,7 @@ Set @XAMLContent=N'
 						IsTextEditable="False"
 						AllowNullInput="True"
 						NullText=""
+
 						PopupContentTemplate="{DynamicResource DivisionIDStadard}" />
 
 		<!--Begin Button Loc-->
