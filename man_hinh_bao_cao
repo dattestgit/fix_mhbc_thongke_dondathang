@@ -219,20 +219,20 @@ Set @XAMLContent=N'
         <dxe:DateEdit x:Name="txbRDVoucherDateTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True"/>
  
 		<!--Begin don han-->
-		<Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
+		<Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="2" />
         <dxg:PrintTextEdit x:Name="txbVoucherNo" EditValue="VoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" 
-		Width="120" Grid.Column="6" Grid.Row="1" />
+		Width="120" Grid.Column="6" Grid.Row="2" />
 	 
 	
-		<Label x:Name="lblDeliveryDate" Content="Ngày giao" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="20" Margin="0,8,0,0" />
-		<dxe:DateEdit x:Name="txbDeliveryDateFrom" Grid.Row="2" Grid.Column="6" Width="120" Height="22" Margin="0,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
-		<Label x:Name="lblDeliveryDateTo" Content="đến" Grid.Row="2" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Top" Width="30" Height="20" Margin="0,8,0,0" />
-		<dxe:DateEdit x:Name="txbDeliveryDateTo" Grid.Row="2" Grid.Column="8" Width="120" Height="22" Margin="0,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
+		<Label x:Name="lblDeliveryDate" Content="Ngày giao hàng" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="20" Margin="0,8,0,0" />
+		<dxe:DateEdit x:Name="txbDeliveryDateFrom" Grid.Row="0" Grid.Column="6" Width="120" Height="22" Margin="0,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
+		<Label x:Name="lblDeliveryDateTo" Grid.Row="0" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Top" Width="30" Height="20" Margin="0,8,0,0" />
+		<dxe:DateEdit x:Name="txbDeliveryDateTo" Grid.Row="0" Grid.Column="8" Width="120" Height="22" Margin="0,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
 
 	 
-	 	<Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="0" Grid.Column="5" Margin="0,10,0,0" Height="20" />
+	 	<Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="1" Grid.Column="5" Margin="0,10,0,0" Height="20" />
 		<dxg:LookUpEdit x:Name="tdbcStatusSO"
-		                Grid.Row="0"
+		                Grid.Row="1"
 		                Grid.Column="6"
 		                Width="180"
 		                Height="22"
