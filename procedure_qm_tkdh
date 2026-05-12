@@ -18,23 +18,24 @@ AS
 SET NOCOUNT ON
 
 DECLARE
-    @SQLGenCol00 NVARCHAR(MAX),
-    @SQLGenCol01 NVARCHAR(MAX),
-    @SQLGenCol02 NVARCHAR(MAX),
-    @SQLGenCol03 NVARCHAR(MAX),
-    @SQLGenCol04 NVARCHAR(MAX),
+    @SQLGenCol00 NVARCHAR(4000),
+    @SQLGenCol01 NVARCHAR(4000),
+    @SQLGenCol02 NVARCHAR(4000),
+    @SQLGenCol03 NVARCHAR(4000),
+    @SQLGenCol04 NVARCHAR(4000),
 
-    @SQL00       NVARCHAR(MAX),
-    @SQL01       NVARCHAR(MAX),
-    @SQL02       NVARCHAR(MAX),
-    @SQL03       NVARCHAR(MAX),
-    @SQL04       NVARCHAR(MAX),
-    @SQL05       NVARCHAR(MAX),
+    @SQL00       NVARCHAR(4000),
+    @SQL01       NVARCHAR(4000),
+    @SQL02       NVARCHAR(4000),
+    @SQL03       NVARCHAR(4000),
+    @SQL04       NVARCHAR(4000),
+    @SQL05       NVARCHAR(4000),
     @SQL06       NVARCHAR(MAX),
     @SQL07       NVARCHAR(MAX),
     @SQL08       NVARCHAR(MAX),
     @SQL09       NVARCHAR(MAX),
     @SQL10       NVARCHAR(MAX),
+	@SQLStatusSO NVARCHAR(MAX),
 
     @FromMonth   TINYINT,
     @FromYear    INT,
@@ -61,6 +62,16 @@ SET @SQL07 = N''
 SET @SQL08 = N''
 SET @SQL09 = N''
 SET @SQL10 = N''
+SET @SQLStatusSO = N'
+    CASE WHEN ISNULL(T1.Status, '''') = ''0111000000'' AND SUBSTRING(ISNULL(T1.Status, ''''), 4, 1) = ''1'' THEN ''4''
+        WHEN SUBSTRING(ISNULL(T1.Status, ''''), 8, 1) = ''1'' THEN ''8''
+        WHEN SUBSTRING(ISNULL(T1.Status, ''''), 9, 1) = ''1'' THEN ''9''
+        WHEN SUBSTRING(ISNULL(T1.Status, ''''), 3, 1) = ''1'' THEN ''3''
+        WHEN SUBSTRING(ISNULL(T1.Status, ''''), 2, 1) = ''1'' THEN ''2''
+        WHEN SUBSTRING(ISNULL(T1.Status, ''''), 1, 1) = ''1'' THEN ''1''
+        ELSE ''''
+    END
+'
 SET @FromMonth = LEFT(ISNULL(@PeriodFrom, ''), 2)
 SET @FromYear  = RIGHT(ISNULL(@PeriodFrom, ''), 4)
 SET @ToMonth   = LEFT(ISNULL(@PeriodTo, ''), 2)
@@ -155,12 +166,13 @@ BEGIN
         CONVERT(NVARCHAR(500), '''') AS KhoD,
         ISNULL(T2.DRef4U, '''') AS StructureID,
         ISNULL(T2.DRef5U, '''') AS WaveID,
-        T1.StatusVoucher AS StatusSO
+        STS.StatusSO AS StatusSO
     INTO #D05T0016_1
     FROM D05T0016 T1 WITH(NOLOCK)
     INNER JOIN D05T0017 T2 WITH(NOLOCK) ON T1.QuotationID = T2.QuotationID
 	LEFT JOIN Object O WITH(NOLOCK) ON O.ObjectTypeID = T1.ObjectTypeID AND O.ObjectID = T1.CustomerID
     LEFT JOIN D07T0002 I WITH(NOLOCK) ON I.InventoryID = T2.InventoryID
+	CROSS APPLY(SELECT ' + @SQLStatusSO + N' AS StatusSO) STS
     WHERE 1 = 1
       AND T1.ProfessionKind IN (''O'', ''RO'')
     '
@@ -171,7 +183,7 @@ BEGIN
       ' + CASE WHEN ISNULL(@IsRDVoucherDate, 0) = 1 AND @DateRDVoucherDateFrom IS NOT NULL AND @DateRDVoucherDateTo IS NOT NULL THEN ' AND CONVERT(DATE, T1.VoucherDate) BETWEEN ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateFrom, 112) + ''' AND ''' + CONVERT(VARCHAR(8), @DateRDVoucherDateTo, 112) + ''' ' ELSE '' END + '
       ' + CASE WHEN ISNULL(@VoucherNo, '') = '' THEN '' ELSE ' AND T1.VoucherNum LIKE ''%' + REPLACE(@VoucherNo, '''', '''''') + '%'' ' END + '
       ' + CASE WHEN @DeliveryDate IS NULL THEN '' ELSE ' AND T2.DeliveryDate >= ''' + CONVERT(VARCHAR(8), @DeliveryDate, 112) + ''' AND T2.DeliveryDate < ''' + CONVERT(VARCHAR(8), DATEADD(DAY, 1, @DeliveryDate), 112) + ''' ' END + '
-      ' + CASE WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN '' ELSE ' AND T1.StatusVoucher = ''' + REPLACE(@StatusSO, '''', '''''') + ''' ' END + '
+      ' + CASE WHEN ISNULL(@StatusSO, '%') IN ('', '%') THEN '' ELSE ' AND STS.StatusSO = ''' + REPLACE(@StatusSO, '''', '''''') + ''' ' END + '
     '
 
     SET @SQL02 = N'
