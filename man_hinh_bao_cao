@@ -26,7 +26,7 @@ Set @XmlContent=N'
 		<variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
 		<variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
 		
-		<variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="ID" />
+		<variable name="vStatusSO" control="tdbcStatus" dataType="text" binding="ID" />
 	</variables>
 
 	<datasets>
@@ -36,23 +36,23 @@ Set @XmlContent=N'
 	    <dataset name="Periods"
 	        queryText="SELECT DISTINCT REPLACE(STR(TranMonth, 2), '' '', ''0'') + ''/'' + STR(TranYear, 4) AS Period, TranMonth, TranYear FROM D90T9999 WITH(NOLOCK) ORDER BY TranYear DESC, TranMonth DESC" />
 
-		<dataset name="StatusSO"
-		    queryText="
-		        SELECT ''%'' AS ID, N''Tất cả'' AS Name, 0 AS DisplayOrder
-		
-		        UNION ALL
-		        SELECT ''2'' AS ID, N''Nhận đơn hàng'' AS Name, 1 AS DisplayOrder
-		
-		        UNION ALL
-		        SELECT ''3'' AS ID, N''Chấp nhận đơn hàng'' AS Name, 2 AS DisplayOrder
-		
-		        UNION ALL
-		        SELECT ''8'' AS ID, N''Hoàn tất đơn hàng'' AS Name, 3 AS DisplayOrder
-		
-		        UNION ALL
-		        SELECT ''9'' AS ID, N''Hủy'' AS Name, 4 AS DisplayOrder
-		
-		        ORDER BY DisplayOrder" />
+	<dataset name="StatusSO"
+		queryText="
+			SELECT ''%'' AS ID, N''Tất cả'' AS Name, 0 AS DisplayOrder
+
+			UNION ALL
+			SELECT ''2'' AS ID, N''Nhận đơn hàng'' AS Name, 1 AS DisplayOrder
+
+			UNION ALL
+			SELECT ''3'' AS ID, N''Chấp nhận đơn hàng'' AS Name, 2 AS DisplayOrder
+
+			UNION ALL
+			SELECT ''8'' AS ID, N''Hoàn tất đơn hàng'' AS Name, 3 AS DisplayOrder
+
+			UNION ALL
+			SELECT ''9'' AS ID, N''Hủy'' AS Name, 4 AS DisplayOrder
+
+			ORDER BY DisplayOrder" />
 	
 	    <dataset name="dsCreateCol"
 	        queryText="EXEC Z_Q00713_D05P0707 
@@ -77,7 +77,7 @@ Set @XmlContent=N'
 	    <control name="tdbcPeriodIDFr" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
 	    <control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
 	
-	    <control name="tdbcStatusSO" type="combo" dataset="StatusSO" event="SelectedIndexChanged"/>
+	    <control name="tdbcStatus" type="combo" dataset="StatusSO" event="SelectedIndexChanged"/>
 
 	    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
 	    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
