@@ -25,8 +25,8 @@ Set @XmlContent=N'
 		<variable name="vchkDeliveryDate" control="chkDeliveryDate" dataType="number" binding="" />
 		<variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
 		<variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
-			
-	<variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="ID" />
+		
+		<variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="ID" />
 	</variables>
 
 	<datasets>
@@ -78,13 +78,13 @@ Set @XmlContent=N'
 	    <control name="tdbcPeriodIDTo" type="combo" dataset="Periods" dataDependent="tdbcDivisionID"/>
 	
 	    <control name="tdbcStatusSO" type="combo" dataset="StatusSO" event="SelectedIndexChanged"/>
-	
+
 	    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
 	    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
 	
 	    <control name="txbDeliveryDateFrom" type="DateEdit"/>
 		<control name="txbDeliveryDateTo" type="DateEdit"/>
-
+		 
 	    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5"/>
 	    <control name="tdbgGrid" type="grid"/>
 	</form-items>
@@ -254,23 +254,21 @@ Set @XAMLContent=N'
 					  IsEnabled="{Binding IsChecked, ElementName=chkDeliveryDate}" />
 
 	 
-	 	<Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="1" Grid.Column="5" Margin="0,10,0,0" Height="20" />
-		<dxg:LookUpEdit x:Name="tdbcStatusSO"
-		                Grid.Row="1"
-		                Grid.Column="6"
-		                Width="180"
-		                Height="22"
-		                Margin="0,10,0,0"
-		                HorizontalAlignment="Left"
-		                VerticalAlignment="Top"
-		                DisplayMember="Name"
-		                ValueMember="ID"
-		                AutoPopulateColumns="True"
-		                PopupWidth="260"
-		                ImmediatePopup="True"
-		                IsTextEditable="False"
-		                AllowNullInput="True"
-		                NullText="" />
+		  <!--Begin KHOAN MUC-->
+		  <Label x:Name="lbStatus" Content="Trạng thái" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Grid.Column="5" Grid.Row="1" Height="22" Width="90" />
+		  <dxg:LookUpEdit x:Name="tdbcStatus" Grid.Column="6" Grid.Row="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="Name" ValueMember="ID" IsEnabled="true" PopupWidth="250" ImmediatePopup="True" AutoPopulateColumns="False" RenderTransformOrigin="1.35,0.773">
+			<dxg:LookUpEdit.PopupContentTemplate>
+			  <ControlTemplate>
+				<dxg:GridControl x:Name="PART_GridControl">
+				  <dxg:GridControl.View>
+					<dxg:TableView HorizontalScrollbarVisibility="Auto" VerticalScrollbarVisibility="Auto" AllowPerPixelScrolling="True" ShowTotalSummary="True" ShowGroupPanel="False" AutoWidth="True" AllowBestFit="True" BestFitArea="All" BestFitMode="AllRows" />
+				  </dxg:GridControl.View>
+				  <dxg:GridColumn FieldName="ID" Header="Mã" Width="40" HorizontalHeaderContentAlignment="Center" AutoFilterCondition="Contains" />
+				  <dxg:GridColumn FieldName="Name" Header="Tên" Width="50" HorizontalHeaderContentAlignment="Center" AutoFilterCondition="Contains" />
+				</dxg:GridControl>
+			  </ControlTemplate>
+			</dxg:LookUpEdit.PopupContentTemplate>
+		  </dxg:LookUpEdit>
 
 		<!--Begin Button Loc-->
 		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="9" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
