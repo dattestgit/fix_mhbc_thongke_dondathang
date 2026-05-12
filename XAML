@@ -53,7 +53,7 @@
         <Setter Property="ColumnHeaderTemplate">
           <Setter.Value>
             <DataTemplate>
-              <ContentControl Content="{Binding}" Background="LightSkyBlue" TextBlock.FontWeight="Bold" TextBlock.FontFamily="Segoe UI" TextBlock.FontSize="12" TextBlock.TextAlignment="Center" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" />
+              <ContentControl Content="{Binding}" Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridColumnHeader}}}" Background="LightSkyBlue" TextBlock.FontWeight="Bold" TextBlock.FontFamily="Segoe UI" TextBlock.FontSize="12" TextBlock.TextAlignment="Center" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" />
             </DataTemplate>
           </Setter.Value>
         </Setter>
@@ -85,23 +85,32 @@
       <Label x:Name="lblDivisionID" Content="Đơn vị" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="20" Width="Auto" Grid.Column="0" Grid.Row="0" />
       <dxg:LookUpEdit x:Name="tdbcDivisionID" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="DivisionID" ValueMember="DivisionID" AutoPopulateColumns="False" PopupWidth="250" ImmediatePopup="True" PopupContentTemplate="{DynamicResource DivisionIDStadard}" />
       <!--End Don vi-->
-      <!-- 9/5  -->
-      <!--Begin Trang thai-->
-      <Label x:Name="lblStatusSO" Content="Trạng thái đơn hàng" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="20" Width="Auto" Grid.Column="5" Grid.Row="0" />
-      <dxg:LookUpEdit x:Name="tdbcStatusSO" Grid.Row="0" Grid.Column="6" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="IDName" ValueMember="IDKey" AutoPopulateColumns="False" PopupWidth="250" ImmediatePopup="True" />
-      <!--End Trang thai-->
       <!--Begin Ky-->
       <RadioButton Content="Kỳ" x:Name="chkPeriod" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="22" Width="30" Grid.Row="1" Grid.Column="0" IsChecked="True" />
       <dxg:LookUpEdit x:Name="tdbcPeriodIDFr" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="Period" ValueMember="Period" AutoPopulateColumns="False" PopupWidth="20" ImmediatePopup="True" PopupContentTemplate="{DynamicResource PeriodIDStadard}" />
       <dxg:LookUpEdit x:Name="tdbcPeriodIDTo" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="Period" ValueMember="Period" AutoPopulateColumns="False" PopupWidth="20" ImmediatePopup="True" PopupContentTemplate="{DynamicResource PeriodIDStadard}" />
       <!--End Ky-->
-      <!--Visibility="{Binding IsChecked, ElementName=optReportDate}"-->
-      <RadioButton Content="Ngàyy" x:Name="chkRDVoucherDate" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Height="22" Width="Auto" />
-      <dxe:DateEdit x:Name="txbRDVoucherDateFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
-      <dxe:DateEdit x:Name="txbRDVoucherDateTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
-      <!--Begin don han-->
-      <Label x:Name="lblVoucherNo" Content="Số chứng từ" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Grid.Column="5" Grid.Row="1" />
-      <dxe:TextEdit x:Name="txbVoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="6" Grid.Row="1" />
+      <RadioButton Content="Ngày" x:Name="chkRDVoucherDate" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Height="22" Width="Auto" />
+      <dxe:DateEdit x:Name="txbRDVoucherDateFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
+      <dxe:DateEdit x:Name="txbRDVoucherDateTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
+      <CheckBox Content="Ngày giao hàng" x:Name="chkDLDate" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="1" Grid.Column="5" VerticalAlignment="Top" Height="22" Width="Auto" />
+      <dxe:DateEdit x:Name="txbDLFrom" Grid.Row="1" Grid.Column="6" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
+      <dxe:DateEdit x:Name="txbDLDateTo" Grid.Row="1" Grid.Column="8" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" Visibility="{Binding IsChecked, ElementName=optReportDate}" DateTime="{Binding To, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True" />
+      <!--Begin KHOAN MUC-->
+      <Label x:Name="lbStatus" Content="Trạng thái" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Grid.Column="5" Grid.Row="2" Height="22" Width="90" />
+      <dxg:LookUpEdit x:Name="tdbcStatus" Grid.Column="6" Grid.Row="2" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Height="22" DisplayMember="Name" ValueMember="ID" IsEnabled="true" PopupWidth="250" ImmediatePopup="True" AutoPopulateColumns="False" RenderTransformOrigin="1.35,0.773">
+        <dxg:LookUpEdit.PopupContentTemplate>
+          <ControlTemplate>
+            <dxg:GridControl x:Name="PART_GridControl">
+              <dxg:GridControl.View>
+                <dxg:TableView HorizontalScrollbarVisibility="Auto" VerticalScrollbarVisibility="Auto" AllowPerPixelScrolling="True" ShowTotalSummary="True" ShowGroupPanel="False" AutoWidth="True" AllowBestFit="True" BestFitArea="All" BestFitMode="AllRows" />
+              </dxg:GridControl.View>
+              <dxg:GridColumn FieldName="ID" Header="Mã" Width="40" HorizontalHeaderContentAlignment="Center" AutoFilterCondition="Contains" />
+              <dxg:GridColumn FieldName="Name" Header="Tên" Width="50" HorizontalHeaderContentAlignment="Center" AutoFilterCondition="Contains" />
+            </dxg:GridControl>
+          </ControlTemplate>
+        </dxg:LookUpEdit.PopupContentTemplate>
+      </dxg:LookUpEdit>
       <!--Begin Button Loc-->
       <Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" Height="22" RenderTransformOrigin="1.25,0.5" />
       <!--Begin Button Loc-->
@@ -116,7 +125,16 @@
         </dxg:GridControl.ContextMenu>
         <!--Grid view-->
         <dxg:GridControl.View>
-          <dxg:TableView x:Name="gridview1" AutoWidth="False" ShowGroupPanel="True" ShowAutoFilterRow="True" AllowEditing="False" AllowPerPixelScrolling="True" />
+          <dxg:TableView x:Name="gridview1" AutoWidth="False" ShowGroupPanel="True" ShowAutoFilterRow="True" AllowEditing="False" AllowPerPixelScrolling="True">
+            <dxg:TableView.FormatConditions>
+              <dxg:FormatCondition Expression="[StyleExcel] = '(B)'">
+                <dxc:Format FontWeight="Bold" />
+              </dxg:FormatCondition>
+              <dxg:FormatCondition Expression="[Orderlevel] = '(B)'">
+                <dxc:Format FontWeight="Bold" />
+              </dxg:FormatCondition>
+            </dxg:TableView.FormatConditions>
+          </dxg:TableView>
         </dxg:GridControl.View>
       </L3:L3GridControl>
       <!--End Grid-->
