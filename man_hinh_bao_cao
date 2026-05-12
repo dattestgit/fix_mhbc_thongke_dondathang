@@ -22,7 +22,8 @@ Set @XmlContent=N'
 	
 	    <variable name="vVoucherNo" control="txbVoucherNo" dataType="text" binding="" />
 	
-		<variable name="vDeliveryDate" control="txbDeliveryDate" dataType="date" binding="" />
+		<variable name="vDeliveryDateFrom" control="txbDeliveryDateFrom" dataType="date" binding="" />
+		<variable name="vDeliveryDateTo" control="txbDeliveryDateTo" dataType="date" binding="" />
 			
 	<variable name="vStatusSO" control="tdbcStatusSO" dataType="text" binding="DivisionID" />
 	</variables>
@@ -72,11 +73,11 @@ Set @XmlContent=N'
 	
 	    <dataset name="dsCreateCol"
 	        queryText="EXEC Z_Q00713_D05P0707 
-	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vDeliveryDate''], value[''vStatusSO'']" />
+	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 0, value[''vVoucherNo''], value[''vDeliveryDateFrom''], value[''vDeliveryDateTo''], value[''vStatusSO'']" />
 	
 	    <dataset name="dsGridData"
 	        queryText="EXEC Z_Q00713_D05P0707 
-	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vDeliveryDate''], value[''vStatusSO'']" />
+	            value[''vDivisionID''], value[''vchkPeriod''], value[''vPeriodFr''], value[''vPeriodTo''], value[''vchkRDVoucherDate''], value[''vRDVoucherDateFrom''], value[''vRDVoucherDateTo''], 1, value[''vVoucherNo''], value[''vDeliveryDateFrom''], value[''vDeliveryDateTo''], value[''vStatusSO'']" />
 	</datasets>
 
 		<commands>
@@ -98,9 +99,9 @@ Set @XmlContent=N'
 	    <control name="txbRDVoucherDateFrom" type="DateEdit" require="true"/>
 	    <control name="txbRDVoucherDateTo" type="DateEdit" require="true"/>
 	
-	    <control name="txbDeliveryDate" type="DateEdit"/>
+	    <control name="txbDeliveryDateFrom" type="DateEdit"/>
+		<control name="txbDeliveryDateTo" type="DateEdit"/>
 
-	
 	    <control name="btnFilter" type="button" event="Click" command="cmdFilter" hotKey="F5"/>
 	    <control name="tdbgGrid" type="grid"/>
 	</form-items>
@@ -181,8 +182,8 @@ Set @XAMLContent=N'
             <!--End định dạng thuộc tính cho thuộc tính của cột Header Template in DataGrid Control (dxg:GridControl) Áp dụng cho thuộc tính ColumnHeaderTemplate-->
         </ResourceDictionary>
     </UserControl.Resources>
-  <Border BorderBrush="Black" BorderThickness="1">
-  <Grid Margin="0,2,0,-2">
+  <Border BorderBrush="Black" BorderThickness="1" Padding="12,6,8,0">
+  <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
@@ -222,31 +223,33 @@ Set @XAMLContent=N'
         <dxg:PrintTextEdit x:Name="txbVoucherNo" EditValue="VoucherNo" HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" 
 		Width="120" Grid.Column="6" Grid.Row="1" />
 	 
-
-		<Label x:Name="lblDeliveryDate" Content="Ngày giao" Grid.Row="2" Grid.Column="5" Margin="0,10,0,0" Height="20" />
-		<dxe:DateEdit x:Name="txbDeliveryDate" Grid.Row="2" Grid.Column="6" Width="120" Height="22" Margin="0,10,0,0" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
+	
+		<Label x:Name="lblDeliveryDate" Content="Ngày giao" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="20" Margin="0,8,0,0" />
+		<dxe:DateEdit x:Name="txbDeliveryDateFrom" Grid.Row="2" Grid.Column="6" Width="120" Height="22" Margin="0,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
+		<Label x:Name="lblDeliveryDateTo" Content="đến" Grid.Row="2" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Top" Width="30" Height="20" Margin="0,8,0,0" />
+		<dxe:DateEdit x:Name="txbDeliveryDateTo" Grid.Row="2" Grid.Column="8" Width="120" Height="22" Margin="0,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Mask="dd/MM/yyyy" MaskType="DateTime" DisplayFormatString="dd/MM/yyyy" NullValue="01/01/1900" />
 
 	 
 	 	<Label x:Name="lblStatusSO" Content="Trạng thái" Grid.Row="0" Grid.Column="5" Margin="0,10,0,0" Height="20" />
 		<dxg:LookUpEdit x:Name="tdbcStatusSO"
-						Grid.Row="0"
-						Grid.Column="6"
-						Width="180"
-						Height="22"
-						Margin="0,10,0,0"
-						DisplayMember="DivisionName"
-						ValueMember="DivisionID"
-						AutoPopulateColumns="False"
-						PopupWidth="320"
-						ImmediatePopup="True"
-						IsTextEditable="False"
-						AllowNullInput="True"
-						NullText=""
-
-						PopupContentTemplate="{DynamicResource DivisionIDStadard}" />
+		                Grid.Row="0"
+		                Grid.Column="6"
+		                Width="180"
+		                Height="22"
+		                Margin="0,10,0,0"
+		                HorizontalAlignment="Left"
+		                VerticalAlignment="Top"
+		                DisplayMember="DivisionName"
+		                ValueMember="DivisionID"
+		                AutoPopulateColumns="True"
+		                PopupWidth="320"
+		                ImmediatePopup="True"
+		                IsTextEditable="False"
+		                AllowNullInput="True"
+		                NullText="" />
 
 		<!--Begin Button Loc-->
-		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
+		<Button x:Name="btnFilter" Content="Lọc (F5)" Grid.Row="2" Grid.Column="9" HorizontalAlignment="Left" VerticalAlignment="Top" Width="82" Margin="40,10,0,0" 
 		Height="22" RenderTransformOrigin="1.25,0.5" />
 		<!--Begin Button Loc-->
 
